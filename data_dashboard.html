@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GFMAM Data Dashboard</title>
+    <style>
+        /* Basic styles */
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #003366;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        /* Cards */
+        .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+        .stat-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 280px;
+            text-align: center;
+        }
+        .stat-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            color: #003366;
+        }
+        .stat-card p {
+            font-size: 1.6rem;
+            font-weight: bold;
+        }
+        /* Charts container */
+        .charts-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px;
+        }
+        .chart-wrapper {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 500px;
+        }
+        .chart-wrapper h3 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #003366;
+        }
+        /* Bar chart styles */
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            height: 250px;
+            width: 100%;
+            border-bottom: 1px solid #ccc;
+        }
+        .bar {
+            flex: 1;
+            margin: 0 5px;
+            position: relative;
+            background-color: #ccc;
+            border-radius: 4px 4px 0 0;
+        }
+        .bar-value {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 2px;
+        }
+        .bar-label {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            color: #333;
+            margin-top: 2px;
+            white-space: nowrap;
+        }
+        /* Responsive */
+        @media (max-width: 600px) {
+            .stat-card, .chart-wrapper {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>GFMAM Dashboard - Regional & Society Metrics</h1>
+    </header>
+
+    <!-- Statistics cards -->
+    <section class="stats-container">
+        <div class="stat-card">
+            <h3>Total Annualized Revenue (Societies)</h3>
+            <p id="totalSocRevenue">-</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Annualized Revenue (Regions)</h3>
+            <p id="totalRegRevenue">-</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Members (Societies)</h3>
+            <p id="totalSocMembers">-</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Members (Regions)</h3>
+            <p id="totalRegMembers">-</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Events (Societies)</h3>
+            <p id="totalSocEvents">-</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Events (Regions)</h3>
+            <p id="totalRegEvents">-</p>
+        </div>
+    </section>
+
+    <!-- Charts -->
+    <section class="charts-container">
+        <div class="chart-wrapper">
+            <h3>Annualized Revenue by Society</h3>
+            <div id="revSocietyChart" class="bar-chart"></div>
+        </div>
+        <div class="chart-wrapper">
+            <h3>Annualized Revenue by Region</h3>
+            <div id="revRegionChart" class="bar-chart"></div>
+        </div>
+        <div class="chart-wrapper">
+            <h3>Total Members by Society</h3>
+            <div id="membersSocietyChart" class="bar-chart"></div>
+        </div>
+        <div class="chart-wrapper">
+            <h3>Total Members by Region</h3>
+            <div id="membersRegionChart" class="bar-chart"></div>
+        </div>
+        <div class="chart-wrapper">
+            <h3>Events (Next 18 Months) by Society</h3>
+            <div id="eventsSocietyChart" class="bar-chart"></div>
+        </div>
+        <div class="chart-wrapper">
+            <h3>Events (Next 18 Months) by Region</h3>
+            <div id="eventsRegionChart" class="bar-chart"></div>
+        </div>
+    </section>
+
+    <script>
+        // Data extracted from the Excel file
+        const societyData = [
+            {"Region":"Europe","Society Name":"EFNMS","Active Individual Members":2050,"Active Organizational Members":95,"Total Members":2145,"Events (Next 18 Months)":5,"GFMAM Presentations in Events":3,"Certificates in Market Area":52000,"Certified / Million Inhabitants":25,"Annualized Revenue (USD)":1250000,"Educational Partnerships":4,"Publications Shared":5,"Involvement in GFMAM Projects":2,"Representation in ISO Projects":1,"Mutual Agreements":3,"Presentations / Events":7},
+            {"Region":"Asia","Society Name":"SMRP","Active Individual Members":7480,"Active Organizational Members":80,"Total Members":7560,"Events (Next 18 Months)":4,"GFMAM Presentations in Events":2,"Certificates in Market Area":35000,"Certified / Million Inhabitants":12,"Annualized Revenue (USD)":2800000,"Educational Partnerships":3,"Publications Shared":4,"Involvement in GFMAM Projects":3,"Representation in ISO Projects":1,"Mutual Agreements":2,"Presentations / Events":6},
+            {"Region":"North America","Society Name":"PEMAC","Active Individual Members":4300,"Active Organizational Members":60,"Total Members":4360,"Events (Next 18 Months)":6,"GFMAM Presentations in Events":3,"Certificates in Market Area":47500,"Certified / Million Inhabitants":18,"Annualized Revenue (USD)":3400000,"Educational Partnerships":2,"Publications Shared":5,"Involvement in GFMAM Projects":3,"Representation in ISO Projects":1,"Mutual Agreements":3,"Presentations / Events":8},
+            {"Region":"Africa","Society Name":"SAMRAC","Active Individual Members":1200,"Active Organizational Members":50,"Total Members":1250,"Events (Next 18 Months)":3,"GFMAM Presentations in Events":1,"Certificates in Market Area":12000,"Certified / Million Inhabitants":6,"Annualized Revenue (USD)":950000,"Educational Partnerships":1,"Publications Shared":3,"Involvement in GFMAM Projects":1,"Representation in ISO Projects":0,"Mutual Agreements":1,"Presentations / Events":4},
+            {"Region":"Middle East","Society Name":"GCSAM","Active Individual Members":2700,"Active Organizational Members":70,"Total Members":2770,"Events (Next 18 Months)":4,"GFMAM Presentations in Events":2,"Certificates in Market Area":28000,"Certified / Million Inhabitants":15,"Annualized Revenue (USD)":1800000,"Educational Partnerships":2,"Publications Shared":4,"Involvement in GFMAM Projects":2,"Representation in ISO Projects":1,"Mutual Agreements":2,"Presentations / Events":5},
+            {"Region":"Latin America","Society Name":"ABRAMAN","Active Individual Members":1800,"Active Organizational Members":65,"Total Members":1865,"Events (Next 18 Months)":5,"GFMAM Presentations in Events":2,"Certificates in Market Area":22000,"Certified / Million Inhabitants":9,"Annualized Revenue (USD)":1200000,"Educational Partnerships":2,"Publications Shared":3,"Involvement in GFMAM Projects":1,"Representation in ISO Projects":1,"Mutual Agreements":2,"Presentations / Events":4}
+        ];
+        const regionalData = [
+            {"Region":"Europe","Total Population (In Targeted Geographic Area)":450000000,"Active Individual Members":21765,"Active Organizational Members":5857,"Total Members":27622,"Events (Next 18 Months)":8,"GFMAM Presentations in Events":6,"Certificates in Market Area":320000,"Certified / Million Inhabitants":0.7,"Annualized Revenue (USD)":14200000},
+            {"Region":"Asia","Total Population (In Targeted Geographic Area)":1240000000,"Active Individual Members":38964,"Active Organizational Members":6094,"Total Members":45058,"Events (Next 18 Months)":6,"GFMAM Presentations in Events":5,"Certificates in Market Area":512000,"Certified / Million Inhabitants":0.4,"Annualized Revenue (USD)":21500000},
+            {"Region":"North America","Total Population (In Targeted Geographic Area)":370000000,"Active Individual Members":13944,"Active Organizational Members":5857,"Total Members":19801,"Events (Next 18 Months)":7,"GFMAM Presentations in Events":5,"Certificates in Market Area":398000,"Certified / Million Inhabitants":1.1,"Annualized Revenue (USD)":17800000},
+            {"Region":"Africa","Total Population (In Targeted Geographic Area)":1100000000,"Active Individual Members":8487,"Active Organizational Members":435,"Total Members":8922,"Events (Next 18 Months)":4,"GFMAM Presentations in Events":3,"Certificates in Market Area":123000,"Certified / Million Inhabitants":0.2,"Annualized Revenue (USD)":8600000},
+            {"Region":"Middle East","Total Population (In Targeted Geographic Area)":315000000,"Active Individual Members":2700,"Active Organizational Members":49,"Total Members":2749,"Events (Next 18 Months)":4,"GFMAM Presentations in Events":2,"Certificates in Market Area":58000,"Certified / Million Inhabitants":0.3,"Annualized Revenue (USD)":4500000},
+            {"Region":"Latin America","Total Population (In Targeted Geographic Area)":650000000,"Active Individual Members":4354,"Active Organizational Members":78,"Total Members":4432,"Events (Next 18 Months)":5,"GFMAM Presentations in Events":3,"Certificates in Market Area":89000,"Certified / Million Inhabitants":0.4,"Annualized Revenue (USD)":6700000}
+        ];
+
+        // Helper functions
+        function formatCurrency(value) {
+            return '$' + value.toLocaleString();
+        }
+        function formatNumber(value) {
+            return value.toLocaleString();
+        }
+
+        // Display totals in cards
+        function displayTotals() {
+            const totalSocRevenue = societyData.reduce((sum, item) => sum + item["Annualized Revenue (USD)"], 0);
+            const totalSocMembers = societyData.reduce((sum, item) => sum + item["Total Members"], 0);
+            const totalSocEvents = societyData.reduce((sum, item) => sum + item["Events (Next 18 Months)"], 0);
+
+            document.getElementById('totalSocRevenue').textContent = formatCurrency(totalSocRevenue);
+            document.getElementById('totalSocMembers').textContent = formatNumber(totalSocMembers);
+            document.getElementById('totalSocEvents').textContent = formatNumber(totalSocEvents);
+
+            const totalRegRevenue = regionalData.reduce((sum, item) => sum + item["Annualized Revenue (USD)"], 0);
+            const totalRegMembers = regionalData.reduce((sum, item) => sum + item["Total Members"], 0);
+            const totalRegEvents = regionalData.reduce((sum, item) => sum + item["Events (Next 18 Months)"], 0);
+
+            document.getElementById('totalRegRevenue').textContent = formatCurrency(totalRegRevenue);
+            document.getElementById('totalRegMembers').textContent = formatNumber(totalRegMembers);
+            document.getElementById('totalRegEvents').textContent = formatNumber(totalRegEvents);
+        }
+
+        // Create a bar chart using divs
+        function createBarChart(containerId, labels, values, color, unitFormatter) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            const maxVal = Math.max(...values);
+            labels.forEach((label, idx) => {
+                const bar = document.createElement('div');
+                bar.classList.add('bar');
+                const heightPercent = maxVal > 0 ? (values[idx] / maxVal) * 100 : 0;
+                bar.style.height = heightPercent + '%';
+                bar.style.backgroundColor = color;
+
+                const valueSpan = document.createElement('span');
+                valueSpan.classList.add('bar-value');
+                valueSpan.textContent = unitFormatter(values[idx]);
+                bar.appendChild(valueSpan);
+
+                const labelSpan = document.createElement('span');
+                labelSpan.classList.add('bar-label');
+                labelSpan.textContent = label;
+                bar.appendChild(labelSpan);
+
+                container.appendChild(bar);
+            });
+        }
+
+        // Initialize charts
+        function createCharts() {
+            // Society revenue chart (convert to millions)
+            createBarChart(
+                'revSocietyChart',
+                societyData.map(item => item["Society Name"]),
+                societyData.map(item => item["Annualized Revenue (USD)"]),
+                '#36a2eb',
+                (val) => (val / 1000000).toFixed(1) + 'M'
+            );
+            // Regional revenue chart (millions)
+            createBarChart(
+                'revRegionChart',
+                regionalData.map(item => item["Region"]),
+                regionalData.map(item => item["Annualized Revenue (USD)"]),
+                '#ff6384',
+                (val) => (val / 1000000).toFixed(1) + 'M'
+            );
+            // Society members chart (thousands)
+            createBarChart(
+                'membersSocietyChart',
+                societyData.map(item => item["Society Name"]),
+                societyData.map(item => item["Total Members"]),
+                '#4bc0c0',
+                (val) => formatNumber(val)
+            );
+            // Regional members chart
+            createBarChart(
+                'membersRegionChart',
+                regionalData.map(item => item["Region"]),
+                regionalData.map(item => item["Total Members"]),
+                '#9966ff',
+                (val) => formatNumber(val)
+            );
+            // Society events chart
+            createBarChart(
+                'eventsSocietyChart',
+                societyData.map(item => item["Society Name"]),
+                societyData.map(item => item["Events (Next 18 Months)"]),
+                '#ffce56',
+                (val) => val.toString()
+            );
+            // Regional events chart
+            createBarChart(
+                'eventsRegionChart',
+                regionalData.map(item => item["Region"]),
+                regionalData.map(item => item["Events (Next 18 Months)"]),
+                '#ff9f40',
+                (val) => val.toString()
+            );
+        }
+
+        // Initialize on DOM ready
+        window.addEventListener('DOMContentLoaded', () => {
+            displayTotals();
+            createCharts();
+        });
+    </script>
+</body>
+</html>

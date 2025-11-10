@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GFMAM Global Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Chart.js for Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- ✅ PapaParse for reading Google Sheets CSV -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+
+<body>
+<!-- ======= GFMAM Navbar ======= -->
+<header class="site-header">
+  <div class="nav-container">
+    <!-- Logo -->
+    <div class="logo-section">
+      <a href="https://gfmam.org" target="_blank">
+        <img src="assets/marca_global_forum_horizontal_100dpi_1-removebg-preview.png" alt="GFMAM Logo" class="nav-logo">
+      </a>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="nav-links">
+      <a href="https://gfmam.org/about_menu" target="_blank"><i class="fa fa-globe-asia"></i> About Us</a>
+      <a href="https://gfmam.org/projects-list" target="_blank"><i class="fa fa-business-time"></i> Projects</a>
+      <a href="https://gfmam.org/publications" target="_blank"><i class="fa fa-book-reader"></i> Publications</a>
+
+      <!-- ✅ New Dashboard link -->
+      <a href="index.html" class="dashboard-link"><i class="fa fa-chart-line"></i> Dashboard</a>
+
+      <a href="https://gfmam.org/events" target="_blank"><i class="fa fa-calendar-alt"></i> Events</a>
+      <a href="https://gfmam.org/user/login" target="_blank"><i class="fa fa-sign-in-alt"></i> Log in</a>
+    </nav>
+  </div>
+  <div class="green-bar"></div>
+ <!-- ✅ Font Awesome icons (no integrity issue) -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  crossorigin="anonymous"
+/>
+
+
+
+</header>
+
+
+
+  <!-- Main Dashboard -->
+  <main class="dashboard-container">
+    <!-- KPI Section -->
+    <section class="kpi-section">
+      <div class="kpi-card">
+        <h3>Total Revenue (Societies)</h3>
+        <p id="totalRevenueSocieties">-</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Total Revenue (Regions)</h3>
+        <p id="totalRevenueRegions">-</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Total Members (Societies)</h3>
+        <p id="totalMembersSocieties">-</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Total Members (Regions)</h3>
+        <p id="totalMembersRegions">-</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Total Events (Societies)</h3>
+        <p id="totalEventsSocieties">-</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Total Events (Regions)</h3>
+        <p id="totalEventsRegions">-</p>
+      </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="charts-section">
+      <div class="chart-card">
+        <h3>Society Members</h3>
+        <canvas id="societyMembersChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Society Revenue</h3>
+        <canvas id="societyRevenueChart"></canvas>
+      </div>
+    </section>
+
+    <div class="table-container">
+  <h3 class="table-title">Society Data</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Region</th>
+        <th>Society Name</th>
+        <th>Active Individual Members</th>
+        <th>Active Organizational Members</th>
+        <th>Total Members</th>
+        <th>Events (Next 18 Months)</th>
+      </tr>
+    </thead>
+    <tbody id="societyTableBody">
+      <!-- Filled by JS -->
+    </tbody>
+  </table>
+</div>
+
+<div class="table-container">
+  <h3 class="table-title">Regional (Indices) Data</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Region</th>
+        <th>Total Members</th>
+        <th>Annualized Revenue (USD)</th>
+        <th>Events (Next 18 Months)</th>
+      </tr>
+    </thead>
+    <tbody id="indicesTableBody">
+      <!-- Filled by JS -->
+    </tbody>
+  </table>
+</div>
+<!-- ===== Member Organizations Scrolling Logos ===== -->
+<section class="logo-banner-section">
+  <h2 class="section-title">Member Organizations</h2>
+  <div class="logo-banner-wrapper">
+    <div class="logo-banner">
+      <img src="assets/abraman.png" alt="ABRAMAN">
+      <img src="assets/council.png" alt="Asset Management Council">
+      <img src="assets/Apopo_logo.png" alt="APÓP">
+      <img src="assets/efnms.png" alt="EFNMS">
+      <img src="assets/gsmr.png" alt="GSMR">
+      <img src="assets/iam.png" alt="IAM">
+      <img src="assets/iframi.jpeg" alt="IFRAMI">
+      <img src="assets/IPWEA.jpg" alt="IPWEA">
+      <img src="assets/jaam.png" alt="JAAM">
+      <img src="assets/jipm.png" alt="JIPM">
+      <img src="assets/MAPMA logo.png" alt="MAPMA">
+      <img src="assets/pemac.png" alt="PEMAC">
+      <img src="assets/saama.png" alt="SAAMA">
+    </div>
+  </div>
+</section>
+
+
+  <!-- Footer -->
+  <footer class="dashboard-footer">
+    <p>© 2025 GFMAM. Empowering Global Asset Management Excellence.</p>
+  </footer>
+
+  <!-- Main JS -->
+  <script src="main.js"></script>
+</body>
+</html>
