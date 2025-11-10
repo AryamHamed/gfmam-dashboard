@@ -291,3 +291,84 @@ tr:nth-child(even) {
     margin-top: 10px;
   }
 }
+
+/* ====== TABLE CONTAINER WITH SCROLL ====== */
+.table-container {
+  max-width: 100%;
+  max-height: 420px;        /* 👈 ارتفاع الجدول */
+  overflow-x: auto;         /* ✅ Scroll أفقي */
+  overflow-y: auto;         /* ✅ Scroll عمودي */
+  border: 1.5px solid #d9e3ec;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  background: #fff;
+  margin: 20px 0;
+}
+
+/* ====== TABLE BASE ====== */
+.data-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 1200px; /* 👈 يجبر الجدول على عمل Scroll أفقي */
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-size: 14px;
+  color: #002147;
+}
+
+/* ====== HEADER ====== */
+.data-table thead {
+  background-color: #003366;
+  color: #fff;
+  position: sticky;
+  top: 0; /* ✅ يثبت الصف العلوي عند التمرير */
+  z-index: 2;
+}
+
+.data-table th {
+  padding: 12px 14px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 3px solid #84bd00;
+  white-space: nowrap;
+}
+
+/* ====== BODY ====== */
+.data-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #e4e8ef;
+  white-space: nowrap;
+}
+
+.data-table tbody tr:nth-child(even) {
+  background-color: #f8faff;
+}
+
+.data-table tbody tr:hover {
+  background-color: #eaf3fc;
+  transition: background-color 0.2s ease;
+}
+
+/* ====== TITLE ====== */
+.table-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #002147;
+  margin-top: 1.8rem;
+  border-left: 5px solid #84bd00;
+  padding-left: 10px;
+}
+
+/* ====== CUSTOM SCROLLBAR ====== */
+.table-container::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background-color: #84bd00;
+  border-radius: 6px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background-color: #f0f0f0;
+}
