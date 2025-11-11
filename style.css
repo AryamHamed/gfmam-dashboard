@@ -1,374 +1,519 @@
 /* ===========================
-   GFMAM Dashboard (Light Theme)
+   🌍 GFMAM Dashboard Styles
    =========================== */
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+}
+
 body {
-  font-family: "Montserrat", Arial, sans-serif;
-  background-color: #ffffff;
+  background: #ffffff;
   color: #003366;
+  line-height: 1.6;
+  /* Use a fixed width to prevent resizing on zoom */
+  width: 1600px; 
+  margin: 0 auto; /* Center the layout */
+}
+
+/* ================= HEADER ================= */
+.main-header {
+  background-color: #fff;
+  padding: 10px 40px;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo {
+  height: 80px; /* Larger logo size */
+  width: auto;
+  margin-right: 10px;
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.header-title {
+  color: #002b5c;
+  font-size: 32px; /* Larger font for GFMAM */
+  font-weight: 900; /* Extra bold */
+  margin: 0;
+  line-height: 1;
+}
+
+.header-subtitle {
+  color: #002b5c;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.header-right .nav-menu {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 30px;
   margin: 0;
   padding: 0;
 }
 
-/* Header */
-.dashboard-header {
-  background-color: #ffffff;
-  border-bottom: 4px solid #84bd00;
-  padding: 10px 30px;
+.header-right .nav-menu li {
+  color: #002b5c;
+  font-weight: 600;
+  font-size: 16px; /* Slightly smaller font */
+  cursor: pointer;
   display: flex;
   align-items: center;
+  gap: 8px;
+  transition: color 0.3s ease;
+}
+
+.header-right .nav-menu li:hover {
+  color: #00843d;
+}
+
+.header-green-line {
+  width: 100%;
+  height: 6px;
+  background-color: #00843d;
+}
+
+/* ===== GFMAM SUMMARY + SPIDER CHART LAYOUT ===== */
+#gfmam-section {
+  display: flex;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: 48px; /* 3rem -> 48px */
+  flex-wrap: wrap;
+  margin: 48px auto; /* 3rem -> 48px */
+  max-width: 1400px;
+  padding: 0 32px; /* 0 2rem -> 0 32px */
 }
 
-.gfmam-logo {
-  height: 70px;
-  width: auto;
+/* ---- Left Side: GFMAM KPIs ---- */
+.summary-left {
+  flex: 1;
+  min-width: 600px;
 }
 
-/* Main layout */
-.dashboard-container {
-  padding: 40px 80px;
+.summary-left .section-title {
+  text-align: left;
+  font-size: 28.8px; /* 1.8rem -> 28.8px */
+  margin-bottom: 19.2px; /* 1.2rem -> 19.2px */
+}
+
+.kpi-grid-container {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 19.2px;
 }
 
-/* KPI cards */
-.kpi-section {
+.kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  gap: 19.2px; /* 1.2rem -> 19.2px */
+}
+
+.kpi-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.kpi-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .kpi-card {
-  background: #f8f8f8;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
   text-align: center;
-  padding: 20px;
-  transition: all 0.3s ease;
+  padding: 24px; /* 1.5rem -> 24px */
+  transition: 0.3s ease;
+  position: relative; /* Needed for tooltip positioning */
 }
 
 .kpi-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+}
+
+.kpi-card .kpi-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 8px;
 }
 
 .kpi-card h3 {
-  font-size: 15px;
-  color: #003366;
-  margin-bottom: 10px;
+  color: #002b5c;
+  font-size: 16px; /* 1rem -> 16px */
   font-weight: 600;
+  margin: 0;
 }
 
 .kpi-card p {
-  font-size: 22px;
   color: #84bd00;
   font-weight: 700;
+  font-size: 25.6px; /* 1.6rem -> 25.6px */
 }
 
-/* Charts */
-.charts-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 25px;
+/* ---- Right Side: Spider Chart ---- */
+.spider-right {
+  flex: 0 0 420px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  padding: 16px 32px;
+  text-align: center;
+  height: 480px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
-.chart-card {
-  background: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.chart-card h3 {
-  color: #003366;
-  margin-bottom: 10px;
-}
-
-/* Tables */
-.table-section {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 25px;
-}
-
-.table-card {
-  background: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
-  overflow-x: auto;
-}
-
-.table-card h3 {
+.spider-right .spider-title {
   color: #003366;
   font-weight: 700;
-  margin-bottom: 15px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+.spider-right select {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 16px;
+  font-size: 14.4px;
+}
+
+#spiderChart {
+  max-width: 100%;
+  max-height: 350px;
+  flex-grow: 0; 
+  flex-shrink: 0;
+}
+
+/* ====== KPI CHARTS SECTION ====== */
+.charts-section {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.charts-grid {
+  display: grid;
+  gap: 32px; /* 2rem -> 32px */
+}
+
+.charts-grid-4 {
+  margin-top: 32px; /* Apply margin here for the row of 4 charts */
+}
+
+/* New grid definitions for the charts section */
+.charts-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.charts-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.chart-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 19.2px; /* 1.2rem -> 19.2px */
+  height: 300px; /* Further reduced height to ensure 4 charts fit well in a row */
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  border-top: 5px solid #84bd00;
+  transition: all 0.25s ease;
+  position: relative; /* Needed for tooltip positioning */
+}
+
+.chart-box:hover {
+  transform: translateY(-4px);
+}
+
+.chart-box .chart-header {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+}
+
+.chart-box canvas {
+  flex-grow: 1;
+  max-height: 280px !important;
+  width: 100% !important;
+}
+
+/* ====== Tooltip Styles ===== */
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip-icon {
+  color: #00a3e0; /* Blue color for the info icon */
   font-size: 14px;
+  transition: color 0.2s;
 }
 
-th {
-  background-color: #003366;
-  color: white;
+.tooltip-icon:hover {
+  color: #00843d; /* Green on hover */
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: 250px;
+  background-color: #002b5c; /* Dark blue background */
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
   padding: 10px;
-  text-align: left;
-  font-weight: 600;
+  position: absolute;
+  z-index: 100;
+  bottom: 125%; /* Position above the icon */
+  left: 50%;
+  margin-left: -125px; /* Center the tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 400;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-td {
-  padding: 8px 10px;
-  border-bottom: 1px solid #ddd;
+/* Arrow for the tooltip */
+.tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #002b5c transparent transparent transparent;
 }
 
-tr:nth-child(even) {
-  background-color: #f4f4f4;
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
 }
 
-/* Footer */
-.dashboard-footer {
-  background-color: #f9f9f9;
-  border-top: 3px solid #84bd00;
-  text-align: center;
-  padding: 15px;
-  font-size: 14px;
-  color: #003366;
-  margin-top: 40px;
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-  .dashboard-container {
-    padding: 20px;
-  }
-
-  .table-section {
-    grid-template-columns: 1fr;
-  }
-
-  .charts-section {
-    grid-template-columns: 1fr;
-  }
-
-  .kpi-section {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-/* ===== Scrolling Member Logos ===== */
+/* ===== Member Organizations Scrolling Logos ===== */
 .logo-banner-section {
+  margin: 48px 0; /* 3rem -> 48px */
   text-align: center;
-  padding: 60px 0;
-  background-color: #ffffff;
-  border-top: 3px solid #84bd00;
-  overflow: hidden;
 }
 
 .logo-banner-section .section-title {
   color: #003366;
-  font-size: 1.8rem;
+  font-size: 19.2px; /* 1.2rem -> 19.2px */
+  margin-bottom: 15px;
   font-weight: 700;
-  margin-bottom: 30px;
-  position: relative;
 }
 
 .logo-banner-wrapper {
   overflow: hidden;
-  width: 100%;
   position: relative;
+  background: #f9f9f9;
+  border-top: 2px solid #84bd00;
+  border-bottom: 2px solid #84bd00;
+  padding: 10px 0;
 }
 
 .logo-banner {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 60px;
-  animation: scrollLogos 35s linear infinite;
+  align-items: center;
+  animation: scrollLogos 40s linear infinite;
+  width: max-content;
 }
 
 .logo-banner img {
-  height: 60px;
+  height: 50px;
   width: auto;
+  object-fit: contain;
   transition: transform 0.3s ease;
-  filter: grayscale(0%);
 }
 
 .logo-banner img:hover {
-  transform: scale(1.1);
-  filter: none;
+  transform: scale(1.08);
 }
 
 @keyframes scrollLogos {
-  from {
+  0% {
     transform: translateX(0);
   }
-  to {
+  100% {
     transform: translateX(-50%);
   }
 }
 
-/* Duplicate loop to avoid gap */
-.logo-banner::after {
-  content: "";
-  display: flex;
-}
-
-
-/* ======= GFMAM Navbar ======= */
-.site-header {
-  background-color: #fff;
-  border-bottom: 1px solid #e0e0e0;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-
-.nav-container {
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 10px 40px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.logo-section {
-  display: flex;
-  align-items: center;
-}
-
-.nav-logo {
-  height: 70px;
-  width: auto;
-}
-
-.nav-links {
-  display: flex;
-  gap: 30px;
-}
-
-.nav-links a {
-  text-decoration: none;
-  color: #003366;
-  font-weight: 600;
-  font-size: 15px;
-  transition: 0.3s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.nav-links a:hover {
-  color: #84bd00;
-}
-
-.nav-links i {
-  font-size: 15px;
-  color: #003366;
-}
-
-.green-bar {
-  height: 8px;
-  background-color: #009639;
-  width: 100%;
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-  .nav-container {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .nav-links {
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-top: 10px;
-  }
-}
-
-/* ====== TABLE CONTAINER WITH SCROLL ====== */
-.table-container {
-  max-width: 100%;
-  max-height: 420px;        /* 👈 ارتفاع الجدول */
-  overflow-x: auto;         /* ✅ Scroll أفقي */
-  overflow-y: auto;         /* ✅ Scroll عمودي */
-  border: 1.5px solid #d9e3ec;
-  border-radius: 10px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-  background: #fff;
-  margin: 20px 0;
-}
-
-/* ====== TABLE BASE ====== */
-.data-table {
-  border-collapse: collapse;
-  width: 100%;
-  min-width: 1200px; /* 👈 يجبر الجدول على عمل Scroll أفقي */
-  font-family: 'Segoe UI', Arial, sans-serif;
-  font-size: 14px;
-  color: #002147;
-}
-
-/* ====== HEADER ====== */
-.data-table thead {
-  background-color: #003366;
+/* ================= FOOTER ================= */
+.footer {
+  background: #003366;
   color: #fff;
-  position: sticky;
-  top: 0; /* ✅ يثبت الصف العلوي عند التمرير */
-  z-index: 2;
+  text-align: center;
+  padding: 16px; /* 1rem -> 16px */
+  margin-top: 32px; /* 2rem -> 32px */
+  font-size: 14.4px; /* 0.9rem -> 14.4px */
 }
 
-.data-table th {
-  padding: 12px 14px;
+/* ===== GFMAM Summary Title Line Adjustment ===== */
+.section-title {
+  position: relative;
   text-align: left;
+  width: fit-content;
+  margin-left: 0; /* Remove margin-left to align with the grid */
+  padding-bottom: 12px; /* Add padding to make space for the line */
+}
+  
+.section-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0; /* Position the line at the bottom of the padding */
+  width: 260px; 
+  height: 4px;
+  background-color: #84bd00; 
+  border-radius: 2px;
+}
+
+/* ========================================
+   STYLE FOR THE NEW DARK ROW OF CHARTS
+   ======================================== */
+
+/* Container for the dark row */
+.dark-row {
+  background-color: #002b5c; /* الخلفية الكحلية */
+  border-radius: 16px;
+  padding: 40px 40px; /* مسافة داخلية من الأطراف */
+  margin-top: 40px;
+  width: 100%; /* يمتد العرض بالكامل */
+  max-width: 1400px; /* يوازي الصف السفلي */
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.dark-row .charts-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 شارتات متوازية */
+  gap: 40px;
+  align-items: stretch;
+}
+
+
+/* Responsive behavior for the 3-chart row */
+@media (max-width: 1200px) {
+  .dark-row .charts-grid-3 {
+    grid-template-columns: 1fr; /* Stack them vertically on smaller screens */
+  }
+}
+
+/* ========================================
+   GLOBAL FILTER STYLES (IMPROVED)
+   ======================================== */
+.global-filter-section {
+  padding: 20px 40px; /* Reduced padding */
+  background-color: #f4f6f8;
+  margin-top: 30px;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+.filter-container {
+  max-width: 700px; /* Reduced max-width */
+  margin: 0 auto;
+  text-align: center;
+}
+
+.filter-container label {
+  display: block;
+  font-size: 17px; /* Slightly smaller font */
   font-weight: 600;
-  border-bottom: 3px solid #84bd00;
-  white-space: nowrap;
+  color: #002b5c;
+  margin-bottom: 10px;
 }
 
-/* ====== BODY ====== */
-.data-table td {
-  padding: 10px 14px;
-  border-bottom: 1px solid #e4e8ef;
-  white-space: nowrap;
+/* Wrapper for the selector and button */
+.selector-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
-.data-table tbody tr:nth-child(even) {
-  background-color: #f8faff;
+/* Make Choices.js fill the available space */
+.selector-wrapper .choices {
+  flex-grow: 1;
+  font-size: 15px; /* Smaller font for items */
 }
 
-.data-table tbody tr:hover {
-  background-color: #eaf3fc;
-  transition: background-color 0.2s ease;
+.choices__inner {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 4px 8px; /* Reduced padding */
+  border: 1px solid #ccc;
+  min-height: auto; /* Allow it to be smaller */
 }
 
-/* ====== TITLE ====== */
-.table-title {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #002147;
-  margin-top: 1.8rem;
-  border-left: 5px solid #84bd00;
-  padding-left: 10px;
-}
-
-/* ====== CUSTOM SCROLLBAR ====== */
-.table-container::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-.table-container::-webkit-scrollbar-thumb {
-  background-color: #84bd00;
+.choices__list--multiple .choices__item {
+  background-color: #00843d;
+  border: 1px solid #005a2b;
   border-radius: 6px;
+  color: #fff;
+  font-size: 13px; /* Smaller font for selected items */
+  padding: 4px 8px; /* Reduced padding */
+  margin-bottom: 4px; /* Adjust spacing */
 }
 
-.table-container::-webkit-scrollbar-track {
-  background-color: #f0f0f0;
+.choices[data-type*="select-multiple"] .choices__button,
+.choices[data-type*="text"] .choices__button {
+    border-left: 1px solid #005a2b;
+    margin-left: 8px;
+}
+
+/* --- NEW: Clear All Button Styles --- */
+.clear-button {
+  background-color: #e74c3c; /* Red color */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  width: 38px;  /* Fixed width */
+  height: 38px; /* Fixed height */
+  margin-left: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.clear-button:hover {
+  background-color: #c0392b; /* Darker red on hover */
 }

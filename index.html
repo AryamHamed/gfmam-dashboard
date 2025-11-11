@@ -1,146 +1,297 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GFMAM Global Dashboard</title>
-  <link rel="stylesheet" href="style.css" />
-
-  <!-- Chart.js for Charts -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- ✅ PapaParse for reading Google Sheets CSV -->
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-</head>
-
-<body>
-<!-- ======= GFMAM Navbar ======= -->
-<header class="site-header">
-  <div class="nav-container">
-    <!-- Logo -->
-    <div class="logo-section">
-      <a href="https://gfmam.org" target="_blank">
-        <img src="assets/marca_global_forum_horizontal_100dpi_1-removebg-preview.png" alt="GFMAM Logo" class="nav-logo">
-      </a>
-    </div>
-
-    <!-- Navigation Menu -->
-    <nav class="nav-links">
-      <a href="https://gfmam.org/about_menu" target="_blank"><i class="fa fa-globe-asia"></i> About Us</a>
-      <a href="https://gfmam.org/projects-list" target="_blank"><i class="fa fa-business-time"></i> Projects</a>
-      <a href="https://gfmam.org/publications" target="_blank"><i class="fa fa-book-reader"></i> Publications</a>
-
-      <!-- ✅ New Dashboard link -->
-      <a href="index.html" class="dashboard-link"><i class="fa fa-chart-line"></i> Dashboard</a>
-
-      <a href="https://gfmam.org/events" target="_blank"><i class="fa fa-calendar-alt"></i> Events</a>
-      <a href="https://gfmam.org/user/login" target="_blank"><i class="fa fa-sign-in-alt"></i> Log in</a>
-    </nav>
-  </div>
-  <div class="green-bar"></div>
- <!-- ✅ Font Awesome icons (no integrity issue) -->
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-  crossorigin="anonymous"
-/>
-
-
-
-</header>
-
-
-
-  <!-- Main Dashboard -->
-  <main class="dashboard-container">
-    <!-- KPI Section -->
-    <section class="kpi-section">
-      <div class="kpi-card">
-        <h3>Total Revenue (Societies)</h3>
-        <p id="totalRevenueSocieties">-</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GFMAM Members Value Proposition Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Choices.js for multi-select dropdown -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
+    />
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="header-container">
+        <div class="header-left">
+          <img
+            src="assets/marca_global_forum_horizontal_100dpi_1-removebg-preview.png"
+            alt="GFMAM Logo"
+            class="header-logo"
+          />
+        </div>
+        <div class="header-right">
+          <ul class="nav-menu">
+            <li><i class="fa-solid fa-globe"></i> About Us</li>
+            <li><i class="fa-solid fa-briefcase"></i> Projects</li>
+            <li><i class="fa-solid fa-book-open"></i> Publications</li>
+            <li><i class="fa-solid fa-chart-line"></i> Dashboard</li>
+            <li><i class="fa-solid fa-calendar-days"></i> Events</li>
+            <li><i class="fa-solid fa-right-to-bracket"></i> Log in</li>
+          </ul>
+        </div>
       </div>
-      <div class="kpi-card">
-        <h3>Total Revenue (Regions)</h3>
-        <p id="totalRevenueRegions">-</p>
+      <div class="header-green-line"></div>
+    </header>
+
+    <!-- ===== GFMAM SUMMARY + SPIDER CHART LAYOUT ===== -->
+    <section id="gfmam-section">
+      <!-- ---- Left Side: GFMAM KPIs ---- -->
+      <div class="summary-left">
+        <h2 class="section-title">GFMAM Value Proposition</h2>
+        <div class="kpi-grid-container">
+          <!-- Row 1: 3 Cards -->
+          <div class="kpi-grid kpi-grid-3">
+            <!-- KPI 1: Total Organizations -->
+            <div class="kpi-card">
+              <h3>Total Organizations</h3>
+              <p id="kpi-total-orgs">--</p>
+            </div>
+
+            <!-- KPI 2: Avg. Membership Reach -->
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <h3>Avg. Membership Reach</h3>
+                <div class="tooltip-container">
+                  <i class="fa-solid fa-circle-info tooltip-icon" data-kpi="Membership Reach"></i>
+                  <span class="tooltip-text"></span>
+                </div>
+              </div>
+              <p id="kpi-avg-membership">--</p>
+            </div>
+
+            <!-- KPI 3: Avg. Certification Scheme Reach -->
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <h3>Avg. Certification Reach</h3>
+                <div class="tooltip-container">
+                  <i class="fa-solid fa-circle-info tooltip-icon" data-kpi="Certification Scheme Reach"></i>
+                  <span class="tooltip-text"></span>
+                </div>
+              </div>
+              <p id="kpi-avg-certification">--</p>
+            </div>
+          </div>
+
+          <!-- Row 2: 4 Cards -->
+          <div class="kpi-grid kpi-grid-4">
+            <!-- KPI 4: Total Financial Health -->
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <h3>Total Financial Health</h3>
+                <div class="tooltip-container">
+                  <i class="fa-solid fa-circle-info tooltip-icon" data-kpi="Financial Health"></i>
+                  <span class="tooltip-text"></span>
+                </div>
+              </div>
+              <p id="kpi-total-financial">--</p>
+            </div>
+
+            <!-- KPI 5: Avg. Project Involvement -->
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <h3>Avg. Project Involvement</h3>
+                <div class="tooltip-container">
+                  <i class="fa-solid fa-circle-info tooltip-icon" data-kpi="Involvement in GFMAM Projects"></i>
+                  <span class="tooltip-text"></span>
+                </div>
+              </div>
+              <p id="kpi-avg-projects">--</p>
+            </div>
+
+            <!-- KPI 6: Total Agreements -->
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <h3>Total Agreements</h3>
+                <div class="tooltip-container">
+                  <i class="fa-solid fa-circle-info tooltip-icon" data-kpi="Total Agreements"></i>
+                  <span class="tooltip-text"></span>
+                </div>
+              </div>
+              <p id="kpi-total-agreements">--</p>
+            </div>
+            
+            <!-- KPI 7: Presentations from GFMAM Members (New) -->
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <h3>Avg. Presentations</h3>
+                <div class="tooltip-container">
+                  <i class="fa-solid fa-circle-info tooltip-icon" data-kpi="Presentations from GFMAM Members"></i>
+                  <span class="tooltip-text"></span>
+                </div>
+              </div>
+              <p id="kpi-avg-presentations">--</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="kpi-card">
-        <h3>Total Members (Societies)</h3>
-        <p id="totalMembersSocieties">-</p>
-      </div>
-      <div class="kpi-card">
-        <h3>Total Members (Regions)</h3>
-        <p id="totalMembersRegions">-</p>
-      </div>
-      <div class="kpi-card">
-        <h3>Total Events (Societies)</h3>
-        <p id="totalEventsSocieties">-</p>
-      </div>
-      <div class="kpi-card">
-        <h3>Total Events (Regions)</h3>
-        <p id="totalEventsRegions">-</p>
+
+      <!-- ---- Right Side: Spider Chart ---- -->
+      <div class="spider-right">
+        <h3 class="spider-title">
+          Organization Radar
+          <div class="tooltip-container">
+            <i class="fa-solid fa-circle-info tooltip-icon" data-kpi="Spider Chart"></i>
+            <span class="tooltip-text"></span>
+          </div>
+        </h3>
+        <select id="orgSelector"></select>
+        <canvas id="spiderChart"></canvas>
       </div>
     </section>
 
-    <!-- Charts Section -->
-    <section class="charts-section">
-      <div class="chart-card">
-        <h3>Society Members</h3>
-        <canvas id="societyMembersChart"></canvas>
-      </div>
-      <div class="chart-card">
-        <h3>Society Revenue</h3>
-        <canvas id="societyRevenueChart"></canvas>
+    <!-- ====== GLOBAL CHART FILTER ====== -->
+    <section class="global-filter-section">
+      <div class="filter-container">
+        <label for="globalOrgSelector">Select Societies to Compare</label>
+        <div class="selector-wrapper">
+          <select id="globalOrgSelector" multiple></select>
+          <button id="clearAllBtn" class="clear-button" title="Clear all selections">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
       </div>
     </section>
-<section>
-  <h3 class="table-title">Society Data</h3>
-  <div class="table-container">
-    <table id="societyTable" class="data-table"></table>
-  </div>
-</section>
 
-<section>
-  <h3 class="table-title">Regional (Indices) Data</h3>
-  <div class="table-container">
-    <table id="indicesTable" class="data-table"></table>
-  </div>
-</section>
+    <!-- ====== KPI CHARTS SECTION ====== -->
+<section class="charts-section">
+  <!-- Dark Row for the first 3 charts -->
+  <div class="dark-row">
+    <div class="charts-grid charts-grid-3">
+      <!-- Chart 1: Membership Reach -->
+      <div class="chart-box dark-chart-box">
+        <div class="chart-header">
+          <div class="tooltip-container">
+            <i class="fa-solid fa-circle-info tooltip-icon" data-kpi="Membership Reach"></i>
+            <span class="tooltip-text"></span>
+          </div>
+        </div>
+        <canvas id="chart1"></canvas>
+      </div>
 
+      <!-- Chart 2: Certification Scheme Reach -->
+      <div class="chart-box dark-chart-box">
+        <div class="chart-header">
+          <div class="tooltip-container">
+            <i class="fa-solid fa-circle-info tooltip-icon" data-kpi="Certification Scheme Reach"></i>
+            <span class="tooltip-text"></span>
+          </div>
+        </div>
+        <canvas id="chart2"></canvas>
+      </div>
 
-  
-      <!-- Filled by JS -->
-    </tbody>
-  </table>
-</div>
-<!-- ===== Member Organizations Scrolling Logos ===== -->
-<section class="logo-banner-section">
-  <h2 class="section-title">Member Organizations</h2>
-  <div class="logo-banner-wrapper">
-    <div class="logo-banner">
-      <img src="assets/abraman.png" alt="ABRAMAN">
-      <img src="assets/council.png" alt="Asset Management Council">
-      <img src="assets/Apopo_logo.png" alt="APÓP">
-      <img src="assets/efnms.png" alt="EFNMS">
-      <img src="assets/gsmr.png" alt="GSMR">
-      <img src="assets/iam.png" alt="IAM">
-      <img src="assets/iframi.jpeg" alt="IFRAMI">
-      <img src="assets/IPWEA.jpg" alt="IPWEA">
-      <img src="assets/jaam.png" alt="JAAM">
-      <img src="assets/jipm.png" alt="JIPM">
-      <img src="assets/MAPMA logo.png" alt="MAPMA">
-      <img src="assets/pemac.png" alt="PEMAC">
-      <img src="assets/saama.png" alt="SAAMA">
+      <!-- Chart 3: Financial Health -->
+      <div class="chart-box dark-chart-box">
+        <div class="chart-header">
+          <div class="tooltip-container">
+            <i class="fa-solid fa-circle-info tooltip-icon" data-kpi="Financial Health"></i>
+            <span class="tooltip-text"></span>
+          </div>
+        </div>
+        <canvas id="chart3"></canvas>
+      </div>
     </div>
   </div>
 </section>
 
+      <div class="charts-grid charts-grid-4">
+        <!-- Chart 4: Involvement in GFMAM Projects -->
+        <div class="chart-box">
+          <div class="chart-header">
+            <div class="tooltip-container">
+              <i class="fa-solid fa-circle-info tooltip-icon" data-kpi="Involvement in GFMAM Projects"></i>
+              <span class="tooltip-text"></span>
+            </div>
+          </div>
+          <canvas id="chart4"></canvas>
+        </div>
+        <!-- Chart 5: Bilateral Agreements (Members) -->
+        <div class="chart-box">
+          <div class="chart-header">
+            <div class="tooltip-container">
+              <i class="fa-solid fa-circle-info tooltip-icon" data-kpi="# Bilateral Agreements with GFMAM Members"></i>
+              <span class="tooltip-text"></span>
+            </div>
+          </div>
+          <canvas id="chart5"></canvas>
+        </div>
+        <!-- Chart 6: Bilateral Agreements (Potential Members) -->
+        <div class="chart-box">
+          <div class="chart-header">
+            <div class="tooltip-container">
+              <i class="fa-solid fa-circle-info tooltip-icon" data-kpi="# Bilateral Agreements with GFMAM Potential Members"></i>
+              <span class="tooltip-text"></span>
+            </div>
+          </div>
+          <canvas id="chart6"></canvas>
+        </div>
+        <!-- Chart 7: Presentations from GFMAM Members (New) -->
+        <div class="chart-box">
+          <div class="chart-header">
+            <div class="tooltip-container">
+              <i class="fa-solid fa-circle-info tooltip-icon" data-kpi="Presentations from GFMAM Members"></i>
+              <span class="tooltip-text"></span>
+            </div>
+          </div>
+          <canvas id="chart7"></canvas>
+        </div>
+      </div>
+    </section>
 
-  <!-- Footer -->
-  <footer class="dashboard-footer">
-    <p>© 2025 GFMAM. Empowering Global Asset Management Excellence.</p>
-  </footer>
+            <!-- ===== Member Organizations Scrolling Logos ===== -->
+    <section class="logo-banner-section">
+      <h2 class="section-title">GFMAM Member Organizations</h2>
+      <div class="logo-banner-wrapper">
+        <div class="logo-banner">
+          <!-- Logos should be repeated to ensure smooth scrolling -->
+          <img src="assets/abraman.png" alt="Logo 1" />
+          <img src="assets/Apopo_logo.png" alt="Logo 2" />
+          <img src="assets/IPWEA.jpg" alt="Logo 3" />
+          <img src="assets/jipm.png" alt="Logo 4" />
+          <img src="assets/iframi.jpeg" alt="Logo 5" />
+          <img src="assets/iam.png" alt="Logo 6" />
+          <img src="assets/MAPMA logo.png" alt="Logo 7" />
+          <img src="assets/IPWEA.jpg" alt="Logo 8" />
+          <img src="assets/jaam.png" alt="Logo 9" />
+          <img src="assets/gsmr.png" alt="Logo 10" />
+          <img src="assets/efnms.png" alt="Logo 11" />
+          <img src="assets/pemac.png" alt="Logo 12" />
+          <img src="assets/pemac.png" alt="Logo 13" />
+          <!-- Repeat for seamless loop -->
+          <img src="assets/abraman.png" alt="Logo 1" />
+          <img src="assets/Apopo_logo.png" alt="Logo 2" />
+          <img src="assets/IPWEA.jpg" alt="Logo 3" />
+          <img src="assets/jipm.png" alt="Logo 4" />
+          <img src="assets/iframi.jpeg" alt="Logo 5" />
+          <img src="assets/iam.png" alt="Logo 6" />
+          <img src="assets/MAPMA logo.png" alt="Logo 7" />
+          <img src="assets/IPWEA.jpg" alt="Logo 8" />
+          <img src="assets/jaam.png" alt="Logo 9" />
+          <img src="assets/gsmr.png" alt="Logo 10" />
+          <img src="assets/efnms.png" alt="Logo 11" />
+          <img src="assets/pemac.png" alt="Logo 12" />
+          <img src="assets/pemac.png" alt="Logo 13" />
+        </div>
+      </div>
+    </section>
 
-  <!-- Main JS -->
-  <script src="main.js"></script>
-</body>
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+      <p>© 2025 Global Forum on Maintenance and Asset Management (GFMAM)</p>
+    </footer>
+
+    <!-- ================= JAVASCRIPT LIBRARIES ================= -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+    <!-- Load your custom script LAST -->
+    <script src="main.js"></script>
+  </body>
 </html>
