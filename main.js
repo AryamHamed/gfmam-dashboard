@@ -307,7 +307,7 @@ function renderCharts(data) {
         },
         title: {
           display: true,
-          text: [metadata.title, metadata.unit], // ← عنوان + وحدة
+          text: metadata.title, // ← عنوان + وحدة
           color: "#000000", // العنوان بالأسود
           font: {
             size: 16,
