@@ -256,114 +256,96 @@ function renderCharts(data) {
   charts = [];
 
   chartConfig.forEach(([canvasId, kpiKey], index) => {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    
-    const metadata = kpiMetadata[kpiKey];
-    
-   // Use only title (unit will be drawn inside the chart area)
-  const chartTitle = metadata.title;
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
 
-const chart = new Chart(ctx, {
-  type: "bar",
-  data: {
-    labels: [],
-    datasets: [{
-      label: metadata.title,
-      data: [],
-      backgroundColor: [],
-      borderColor: "#84bd00",
-      borderWidth: 1,
-    }, {
-      label: "Average",
-      data: [],
-      type: "line",
-      borderColor: "#00a3e0",
-      borderWidth: 2,
-      borderDash: [6, 6],
-      pointRadius: 0,
-      fill: false,
-    }],
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { 
-        display: true, 
-        labels: { 
-          color: "#002b5c",
-          generateLabels: function(chart) {
-            const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
-            labels.forEach(label => {
-              if (label.text !== "Average") {
-                label.fillStyle = "#84bd00";
-              }
-            });
-            return labels;
-          }
-        } 
-      },
-      title: { 
-        display: true, 
-        text: metadata.title,
-        color: index < 3 ? "#000000ff" : "#002b5c",
-        font: { 
-          size: 16, 
-          weight: "bold" 
+  const metadata = kpiMetadata[kpiKey];
+
+  const chart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: metadata.title,
+          data: [],
+          backgroundColor: [],
+          borderColor: "#84bd00",
+          borderWidth: 1,
         },
-        padding: {
-            top: 10,
-            bottom: 10
+        {
+          label: "Average",
+          data: [],
+          type: "line",
+          borderColor: "#00a3e0",
+          borderWidth: 2,
+          borderDash: [6, 6],
+          pointRadius: 0,
+          fill: false,
         },
-        fullSize: true,
-        position: 'top',
-        align: 'center'
-      }
+      ],
     },
-    scales: {
-      y: { 
-        beginAtZero: true,
-        ticks: {
-          color: index < 3 ? "#000000ff" : "#000000ff",
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            color: "#002b5c",
+            generateLabels: function (chart) {
+              const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+              labels.forEach((label) => {
+                if (label.text !== "Average") {
+                  label.fillStyle = "#84bd00";
+                }
+              });
+              return labels;
+            },
+          },
         },
-        grid: {
-          color: index < 3 ? "rgba(0, 0, 0, 0.2)" : "rgba(0, 0, 0, 0.1)",
-        }
+        title: {
+          display: true,
+          text: [metadata.title, metadata.unit], // ← عنوان + وحدة
+          color: "#000000", // العنوان بالأسود
+          font: {
+            size: 16,
+            weight: "bold",
+          },
+          padding: { top: 10, bottom: 10 },
+        },
+        subtitle: {
+  display: true,
+  text: metadata.unit,
+  color: "#0073c6", // أزرق مائل للرمادي مثل الصورة
+  font: {
+    family: "Arial",
+    size: 11,
+    style: "italic"
+  },
+  padding: { top: -4 }
+},
+
+
       },
-      x: { 
-        ticks: { 
-          color: index < 3 ? "#000000ff" : "#333",
-          font: { size: 11 } 
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { color: "#000000" },
+          grid: { color: "rgba(0, 0, 0, 0.1)" },
         },
-        grid: {
-          color: index < 3 ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.1)",
-        }
+        x: {
+          ticks: { color: "#000000", font: { size: 11 } },
+          grid: { color: "rgba(0, 0, 0, 0.1)" },
+        },
       },
     },
-  },
-  // ✅ هنا نضيف الـ plugin بشكل صحيح
-  plugins: [{
-    id: 'unitLabel',
-    afterDraw(chart) {
-      const ctx = chart.ctx;
-      const chartArea = chart.chartArea;
-      ctx.save();
-      ctx.font = "12px Montserrat";
-      ctx.fillStyle = "#000000";
-      ctx.textAlign = "center";
-      ctx.fillText(
-        metadata.unit,
-        (chartArea.left + chartArea.right) / 2,
-        chartArea.bottom + 60
-      );
-      ctx.restore();
-    }
-  }]
+  });
+
+  charts.push({ chart, column: metadata.column });
 });
-charts.push({ chart, column: metadata.column });
-});
+
   // ====== 3. FUNCTION TO UPDATE ALL CHARTS ======
   function updateAllCharts() {
     const selectedOrgs = globalChoicesSelector.getValue(true);
