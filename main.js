@@ -76,10 +76,14 @@ async function fetchAllData() {
 function buildMetadataFromInfo(infoData) {
   const metadata = {};
 
-  infoData.forEach((row) => {
+  console.log(`📊 Processing ${infoData.length} rows from Info sheet`);
+
+  infoData.forEach((row, index) => {
     const kviName = row["KVI"];
     const info = row["Info"];
     const unit = row["Unit of Measure"];
+
+    console.log(`Row ${index + 1}: KVI="${kviName}", Unit="${unit}"`);
 
     if (kviName && kviName.trim() !== "") {
       metadata[kviName] = {
@@ -88,6 +92,8 @@ function buildMetadataFromInfo(infoData) {
         tooltip: info || "",
         column: kviName // Column name in KVI sheet
       };
+    } else {
+      console.warn(`Row ${index + 1}: Skipped - empty KVI name`);
     }
   });
 
@@ -99,7 +105,8 @@ function buildMetadataFromInfo(infoData) {
     column: null
   };
 
-  console.log("✅ Built metadata from Info sheet:", metadata);
+  const kpiCount = Object.keys(metadata).length - 1; // Exclude Spider Chart
+  console.log(`✅ Built metadata for ${kpiCount} KPIs:`, Object.keys(metadata).filter(k => k !== "Spider Chart"));
   return metadata;
 }
 
@@ -171,21 +178,38 @@ function updateKPICards(aggregates, metadata) {
 function updateKPILabels(metadata) {
   const keys = Object.keys(metadata).filter(k => k !== "Spider Chart");
 
+  // Get all KPI cards
+  const allCards = document.querySelectorAll('.kpi-card');
+
+  console.log(`Found ${allCards.length} KPI cards, ${keys.length} KPIs in metadata`);
+
   keys.forEach((kpiName, index) => {
-    // Update KPI card titles
-    const cardTitleSelector = `.kpi-card:nth-of-type(${index + 1}) h3`;
-    const cardTitle = document.querySelector(cardTitleSelector);
-    if (cardTitle) {
-      cardTitle.textContent = kpiName;
+    if (index >= allCards.length) {
+      console.warn(`KPI ${kpiName} has no corresponding card (index ${index})`);
+      return;
     }
 
-    // Update tooltip data-kpi attributes
-    const tooltipSelector = `.kpi-card:nth-of-type(${index + 1}) .tooltip-icon`;
-    const tooltipIcon = document.querySelector(tooltipSelector);
+    const card = allCards[index];
+
+    // Update KPI card title
+    const cardTitle = card.querySelector('h3');
+    if (cardTitle) {
+      cardTitle.textContent = kpiName;
+      console.log(`Updated card ${index + 1}: ${kpiName}`);
+    }
+
+    // Update tooltip data-kpi attribute
+    const tooltipIcon = card.querySelector('.tooltip-icon');
     if (tooltipIcon) {
       tooltipIcon.setAttribute("data-kpi", kpiName);
     }
   });
+
+  // Hide extra cards that don't have KPIs
+  for (let i = keys.length; i < allCards.length; i++) {
+    allCards[i].style.display = 'none';
+    console.log(`Hiding card ${i + 1} (no KPI data)`);
+  }
 
   console.log("✅ Updated KPI labels");
 }
