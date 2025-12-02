@@ -1,77 +1,25 @@
 /* =========================================================
-   GFMAM Dashboard (7-KPI Version)
+   GFMAM Dashboard - Dynamic KVI Version
    Author: Aryam
+   Updated: December 2025
+   Data Source: Google Sheets (KVI + Info sheets)
    ========================================================= */
 
 // ====== CONFIGURATION ======
-const sheetURL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vShUL9swlQuiTVz1LQvJhL_lfhB3eriJkIV7vsAN-nKINaowMfFl7We8gezVGFpy8QcPnR4xjBSuN23/pub?gid=1423207942&single=true&output=csv";
+const KVI_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQzLow7RmZkpO7zMGrvH9q4Uclu8DJ6EHAN8aYZ62bx4KsWa3Ut8c5GsOXJIkGvfwp8T-eBj7yev0Y/pub?gid=450258484&single=true&output=csv";
+const INFO_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQzLow7RmZkpO7zMGrvH9q4Uclu8DJ6EHAN8aYZ62bx4KsWa3Ut8c5GsOXJIkGvfwp8T-eBj7yev0Y/pub?gid=1345572784&single=true&output=csv";
 
-// Global variables for charts and the selector
+// Global variables
 let charts = [];
 let globalChoicesSelector = null;
+let kpiMetadata = {}; // Will be populated from Info sheet
+let kviData = [];     // Will store KVI data
+let kpiKeys = [];     // Will store KPI names in order
 
-// ====== KPI METADATA (Single Source of Truth) ======
-const kpiMetadata = {
-  "Total Members": {
-    title: "Total Members",
-    unit: "Members",
-    tooltip: "Total active members across all GFMAM societies.",
-    column: "Total Members",
-  },
-  "Financial Health": {
-    title: "Financial Health (USD per Member)",
-    unit: "USD per Member",
-    tooltip: "Average financial health per member. Derived from annualized revenue divided by total members.",
-    column: "Financial Health",
-  },
-  "Active Projects (IN/IO)": {
-    title: "Active Projects (IN/IO)",
-    unit: "Number of Projects",
-    tooltip: "Count of active international and inter-organizational projects.",
-    column: "Active Projects",
-  },
-  "Collaboration Agreements (GFMAM)": {
-    title: "Collaboration Agreements (GFMAM)",
-    unit: "Number of Agreements",
-    tooltip: "Total collaboration agreements between member societies within the GFMAM network.",
-    column: "Collaboration Agreements",
-  },
-  "GFMAM Calendar Events": {
-    title: "GFMAM Calendar Events",
-    unit: "Number of Events",
-    tooltip: "Count of GFMAM-branded events on the official calendar per year.",
-    column: "Calendar Events",
-  },
-  "Face-to-Face Meeting Hosting": {
-    title: "Face-to-Face Meeting Hosting",
-    unit: "Hosted F2F Meetings",
-    tooltip: "Number of face-to-face GFMAM meetings hosted by each society.",
-    column: "Member Meeting Hosting",
-  },
-  "Triplet (3-Year Rolling)": {
-    title: "Triplet (3-Year Rolling)",
-    unit: "Rolling 3-Year Value",
-    tooltip: "3-year rolling KPI (for demo: current-year value multiplied by 3 or pre-calculated in the sheet).",
-    column: "Triplet",
-  },
-  "Spider Chart": {
-    title: "Organization Radar",
-    unit: "1-10 Scale",
-    tooltip:
-      "This radar chart visualizes the organization's performance across all 7 KPIs, scaled from 1 (lowest) to 10 (highest) relative to all other member societies.",
-    column: null,
-  },
-};
-
-// Ordered KPI keys (excluding the spider chart)
-const kpiKeys = Object.keys(kpiMetadata).filter((key) => key !== "Spider Chart");
-
-
-// ====== Fetch & Parse CSV Using PapaParse (Best & Safe Method for CSP) ======
-async function fetchCSVData() {
+// ====== FETCH & PARSE CSV HELPER FUNCTION ======
+async function fetchCSV(url) {
   try {
-    const response = await fetch(sheetURL);
+    const response = await fetch(url);
     if (!response.ok) {
       console.error("❌ Failed to fetch CSV:", response.status, response.statusText);
       return [];
@@ -79,20 +27,16 @@ async function fetchCSVData() {
 
     const csvText = await response.text();
 
-    // Parse CSV safely
+    // Parse CSV safely using PapaParse
     const parsed = Papa.parse(csvText, {
       header: true,
       dynamicTyping: true,
       skipEmptyLines: true,
-
-      // Fix header names (removes hidden spaces, UTF BOM, trims)
       transformHeader: (header) =>
         header.replace(/[\u200B-\u200D\uFEFF]/g, "").trim(),
-
-      // Fix cell values (cleans spaces, currency, BOM chars)
       transform: (value) => {
         if (typeof value === "string") {
-          value = value.replace(/[\u200B-\u200D\uFEFF$,]/g, "").trim();
+          value = value.replace(/[\u200B-\u200D\uFEFF$,%]/g, "").trim();
         }
         return value === "" ? null : value;
       },
@@ -106,126 +50,173 @@ async function fetchCSVData() {
   }
 }
 
+// ====== FETCH ALL DATA (KVI + INFO) ======
+async function fetchAllData() {
+  try {
+    console.log("🔄 Fetching KVI and Info data...");
 
+    const [kviRaw, infoRaw] = await Promise.all([
+      fetchCSV(KVI_SHEET_URL),
+      fetchCSV(INFO_SHEET_URL)
+    ]);
 
-// ====== CALCULATE KPIs (7 NEW KPIs) ======
-function calculateKPIs(data) {
-  let totalMembers = 0;
-
-  let totalFinancial = 0;
-  let financialCount = 0;
-
-  let totalActiveProjects = 0;
-  let totalCollab = 0;
-  let totalEvents = 0;
-  let totalHosting = 0;
-  let totalTriplet = 0;
-
-  data.forEach((item) => {
-    const tm = parseFloat(item["Total Members"]);
-    if (!isNaN(tm)) totalMembers += tm;
-
-    const fh = parseFloat(item["Financial Health"]);
-    if (!isNaN(fh)) {
-      totalFinancial += fh;
-      financialCount++;
+    if (kviRaw.length === 0 || infoRaw.length === 0) {
+      console.error("❌ Failed to fetch data from sheets");
+      return null;
     }
 
-    const ap = parseFloat(item["Active Projects"]);
-    if (!isNaN(ap)) totalActiveProjects += ap;
+    return { kviData: kviRaw, infoData: infoRaw };
+  } catch (error) {
+    console.error("❌ Error fetching data:", error);
+    return null;
+  }
+}
 
-    const ca = parseFloat(item["Collaboration Agreements"]);
-    if (!isNaN(ca)) totalCollab += ca;
+// ====== BUILD METADATA FROM INFO SHEET ======
+function buildMetadataFromInfo(infoData) {
+  const metadata = {};
 
-    const ev = parseFloat(item["Calendar Events"]);
-    if (!isNaN(ev)) totalEvents += ev;
+  infoData.forEach((row) => {
+    const kviName = row["KVI"];
+    const info = row["Info"];
+    const unit = row["Unit of Measure"];
 
-    const mh = parseFloat(item["Member Meeting Hosting"]);
-    if (!isNaN(mh)) totalHosting += mh;
-
-    const tr = parseFloat(item["Triplet"]);
-    if (!isNaN(tr)) totalTriplet += tr;
+    if (kviName && kviName.trim() !== "") {
+      metadata[kviName] = {
+        title: kviName,
+        unit: unit || "",
+        tooltip: info || "",
+        column: kviName // Column name in KVI sheet
+      };
+    }
   });
 
-  const avgFinancial = financialCount > 0 ? totalFinancial / financialCount : 0;
-
-  return {
-    totalMembers,
-    avgFinancial,
-    totalActiveProjects,
-    totalCollab,
-    totalEvents,
-    totalHosting,
-    totalTriplet,
+  // Add special metadata for Spider Chart
+  metadata["Spider Chart"] = {
+    title: "Organization Radar",
+    unit: "1-10 Scale",
+    tooltip: "This radar chart visualizes the organization's performance across all KVIs, scaled from 1 (lowest) to 10 (highest) relative to all other member societies.",
+    column: null
   };
+
+  console.log("✅ Built metadata from Info sheet:", metadata);
+  return metadata;
 }
 
-// ====== UPDATE KPI CARDS (USING NEW IDS) ======
-function updateKPIs(kpis) {
-  const formatInt = (v) => (v ? v.toLocaleString() : "--");
-  const formatFloat = (v) => (v ? v.toFixed(2) : "--");
+// ====== CALCULATE AGGREGATE KPIs ======
+function calculateAggregateKPIs(data, metadata) {
+  const aggregates = {};
+  const keys = Object.keys(metadata).filter(k => k !== "Spider Chart");
 
-  const totalMembersEl = document.getElementById("kpi-total-members");
-  const financialEl = document.getElementById("kpi-financial-health");
-  const activeProjectsEl = document.getElementById("kpi-active-projects");
-  const collaborationEl = document.getElementById("kpi-collaboration");
-  const calendarEl = document.getElementById("kpi-calendar-events");
-  const hostingEl = document.getElementById("kpi-meeting-hosting");
-  const tripletEl = document.getElementById("kpi-triplet");
+  keys.forEach((kpiName) => {
+    const column = metadata[kpiName].column;
+    let sum = 0;
+    let count = 0;
 
-  if (totalMembersEl)
-    totalMembersEl.textContent = formatInt(kpis.totalMembers);
+    data.forEach((row) => {
+      const value = parseFloat(row[column]);
+      if (!isNaN(value) && value !== null) {
+        sum += value;
+        count++;
+      }
+    });
 
-  if (financialEl)
-    financialEl.textContent = kpis.avgFinancial
-      ? `$ ${kpis.avgFinancial.toFixed(2)}`
-      : "--";
+    // For percentage KPIs, calculate average; for others, sum
+    const unit = metadata[kpiName].unit.toLowerCase();
+    if (unit.includes("%")) {
+      aggregates[kpiName] = count > 0 ? sum / count : 0;
+    } else {
+      aggregates[kpiName] = sum;
+    }
+  });
 
-  if (activeProjectsEl)
-    activeProjectsEl.textContent = formatInt(kpis.totalActiveProjects);
-
-  if (collaborationEl)
-    collaborationEl.textContent = formatInt(kpis.totalCollab);
-
-  if (calendarEl)
-    calendarEl.textContent = formatInt(kpis.totalEvents);
-
-  if (hostingEl)
-    hostingEl.textContent = formatInt(kpis.totalHosting);
-
-  if (tripletEl)
-    tripletEl.textContent = formatFloat(kpis.totalTriplet);
+  console.log("✅ Calculated aggregate KPIs:", aggregates);
+  return aggregates;
 }
 
-// ====== TOOLTIP INITIALIZATION ======
-function initializeTooltips() {
+// ====== UPDATE KPI CARDS ======
+function updateKPICards(aggregates, metadata) {
+  const keys = Object.keys(metadata).filter(k => k !== "Spider Chart");
+
+  keys.forEach((kpiName, index) => {
+    const elementId = `kpi-${index + 1}`;
+    const element = document.getElementById(elementId);
+
+    if (element) {
+      const value = aggregates[kpiName];
+      const unit = metadata[kpiName].unit;
+
+      let displayValue = "--";
+      if (value !== undefined && value !== null) {
+        // Format based on unit type
+        if (unit.toLowerCase().includes("%")) {
+          displayValue = value.toFixed(2) + "%";
+        } else if (unit.toLowerCase().includes("time")) {
+          displayValue = value.toFixed(1) + "x";
+        } else if (unit.toLowerCase().includes("representative")) {
+          displayValue = value.toFixed(1);
+        } else {
+          displayValue = value.toLocaleString();
+        }
+      }
+
+      element.textContent = displayValue;
+    }
+  });
+
+  console.log("✅ Updated KPI cards");
+}
+
+// ====== UPDATE HTML LABELS WITH DYNAMIC KPI NAMES ======
+function updateKPILabels(metadata) {
+  const keys = Object.keys(metadata).filter(k => k !== "Spider Chart");
+
+  keys.forEach((kpiName, index) => {
+    // Update KPI card titles
+    const cardTitleSelector = `.kpi-card:nth-of-type(${index + 1}) h3`;
+    const cardTitle = document.querySelector(cardTitleSelector);
+    if (cardTitle) {
+      cardTitle.textContent = kpiName;
+    }
+
+    // Update tooltip data-kpi attributes
+    const tooltipSelector = `.kpi-card:nth-of-type(${index + 1}) .tooltip-icon`;
+    const tooltipIcon = document.querySelector(tooltipSelector);
+    if (tooltipIcon) {
+      tooltipIcon.setAttribute("data-kpi", kpiName);
+    }
+  });
+
+  console.log("✅ Updated KPI labels");
+}
+
+// ====== INITIALIZE TOOLTIPS ======
+function initializeTooltips(metadata) {
   const tooltipIcons = document.querySelectorAll(".tooltip-icon");
+
   tooltipIcons.forEach((icon) => {
     const kpiKey = icon.getAttribute("data-kpi");
-    const metadata = kpiMetadata[kpiKey];
-    if (!metadata) return;
+    const meta = metadata[kpiKey];
+
+    if (!meta) return;
 
     const tooltipTextSpan = icon
       .closest(".tooltip-container")
       .querySelector(".tooltip-text");
 
-    const content = `Unit: ${metadata.unit}<br><br>${metadata.tooltip}`;
+    const content = `Unit: ${meta.unit}<br><br>${meta.tooltip}`;
     tooltipTextSpan.innerHTML = content;
   });
+
+  console.log("✅ Initialized tooltips");
 }
 
-function renderCharts(data) {
+// ====== RENDER CHARTS ======
+function renderCharts(data, metadata) {
   const val = (x) => parseFloat(String(x).replace(/[^\d.-]/g, "")) || 0;
 
-  const chartConfig = [
-    ["chart1", "Total Members"],
-    ["chart2", "Financial Health"],
-    ["chart3", "Active Projects (IN/IO)"],
-    ["chart4", "Collaboration Agreements (GFMAM)"],
-    ["chart5", "GFMAM Calendar Events"],
-    ["chart6", "Face-to-Face Meeting Hosting"],
-    ["chart7", "Triplet (3-Year Rolling)"],
-  ];
+  const keys = Object.keys(metadata).filter(k => k !== "Spider Chart");
+  const chartConfig = keys.map((key, index) => [`chart${index + 1}`, key]);
 
   const orgNames = data.map((d) => d["Organization Name"]);
 
@@ -255,14 +246,14 @@ function renderCharts(data) {
   charts.forEach(({ chart }) => chart.destroy());
   charts = [];
 
-  // ====== CREATE CHARTS WITHOUT AVERAGE ======
+  // ====== CREATE CHARTS ======
   chartConfig.forEach(([canvasId, kpiKey]) => {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
 
-    const metadata = kpiMetadata[kpiKey];
-    const column = metadata.column;
+    const meta = metadata[kpiKey];
+    const column = meta.column;
 
     const chart = new Chart(ctx, {
       type: "bar",
@@ -270,7 +261,7 @@ function renderCharts(data) {
         labels: [],
         datasets: [
           {
-            label: metadata.title,
+            label: meta.title,
             data: [],
             backgroundColor: "#84bd00",
             borderColor: "#84bd00",
@@ -290,14 +281,14 @@ function renderCharts(data) {
           },
           title: {
             display: true,
-            text: metadata.title,
+            text: meta.title,
             color: "#000000",
             font: { size: 16, weight: "bold" },
             padding: { top: 10, bottom: 10 },
           },
           subtitle: {
             display: true,
-            text: metadata.unit,
+            text: meta.unit,
             color: "#0073c6",
             font: { size: 11, style: "italic" },
             padding: { top: -4 },
@@ -309,8 +300,11 @@ function renderCharts(data) {
             ticks: {
               color: "#000000",
               callback: function (value) {
-                if (kpiKey === "Financial Health") {
-                  return "$" + value.toFixed(0);
+                const unit = meta.unit.toLowerCase();
+                if (unit.includes("time")) {
+                  return value.toFixed(1) + "x";
+                } else if (unit.includes("%")) {
+                  return value.toFixed(1) + "%";
                 }
                 return value;
               },
@@ -358,10 +352,11 @@ function renderCharts(data) {
   });
 
   updateAllCharts();
+  console.log("✅ Rendered charts");
 }
 
 // ====== RENDER SPIDER CHART ======
-function renderSpiderChart(data) {
+function renderSpiderChart(data, metadata) {
   const orgSelector = document.getElementById("orgSelector");
   const spiderCtx = document.getElementById("spiderChart");
 
@@ -374,10 +369,12 @@ function renderSpiderChart(data) {
 
   const val = (x) => parseFloat(String(x).replace(/[^\d.-]/g, "")) || 0;
 
+  const keys = Object.keys(metadata).filter(k => k !== "Spider Chart");
+
   const getAllKpiValues = (column) => data.map((d) => val(d[column]));
 
-  const kpiScales = kpiKeys.map((key) => {
-    const column = kpiMetadata[key].column;
+  const kpiScales = keys.map((key) => {
+    const column = metadata[key].column;
     const values = getAllKpiValues(column);
     const min = Math.min(...values);
     const max = Math.max(...values);
@@ -391,10 +388,10 @@ function renderSpiderChart(data) {
 
   function getOrgData(orgName) {
     const org = data.find((d) => d["Organization Name"] === orgName);
-    if (!org) return Array(kpiKeys.length).fill(0);
+    if (!org) return Array(keys.length).fill(0);
 
-    return kpiKeys.map((key, index) => {
-      const column = kpiMetadata[key].column;
+    return keys.map((key, index) => {
+      const column = metadata[key].column;
       const rawValue = val(org[column]);
       const scale = kpiScales[index];
       return scaleValue(rawValue, scale.min, scale.max);
@@ -405,7 +402,7 @@ function renderSpiderChart(data) {
   const spiderChart = new Chart(spiderCtx, {
     type: "radar",
     data: {
-      labels: kpiKeys.map((key) => kpiMetadata[key].title),
+      labels: keys.map((key) => metadata[key].title),
       datasets: [
         {
           label: firstOrg,
@@ -447,22 +444,39 @@ function renderSpiderChart(data) {
     spiderChart.data.datasets[0].data = getOrgData(orgName);
     spiderChart.update();
   });
+
+  console.log("✅ Rendered spider chart");
 }
 
 // ====== INITIALIZE DASHBOARD ======
 async function initializeDashboard() {
   try {
-    const data = await fetchCSVData();
-    if (data.length > 0) {
-      const kpis = calculateKPIs(data);
-      updateKPIs(kpis);
-      initializeTooltips();
-      renderCharts(data);
-      renderSpiderChart(data);
-      console.log("✅ Dashboard Initialized Successfully");
-    } else {
-      console.error("❌ No data fetched to initialize dashboard.");
+    console.log("🚀 Initializing GFMAM Dashboard...");
+
+    // Fetch all data
+    const allData = await fetchAllData();
+    if (!allData) {
+      console.error("❌ Failed to fetch data");
+      return;
     }
+
+    const { kviData: kviRaw, infoData } = allData;
+
+    // Build metadata from Info sheet
+    kpiMetadata = buildMetadataFromInfo(infoData);
+    kviData = kviRaw;
+
+    // Calculate aggregate KPIs
+    const aggregates = calculateAggregateKPIs(kviData, kpiMetadata);
+
+    // Update UI
+    updateKPILabels(kpiMetadata);
+    updateKPICards(aggregates, kpiMetadata);
+    initializeTooltips(kpiMetadata);
+    renderCharts(kviData, kpiMetadata);
+    renderSpiderChart(kviData, kpiMetadata);
+
+    console.log("✅ Dashboard Initialized Successfully");
   } catch (error) {
     console.error("❌ Error initializing dashboard:", error);
   }
