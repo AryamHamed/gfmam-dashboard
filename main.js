@@ -214,6 +214,25 @@ function updateKPILabels(metadata) {
   console.log("✅ Updated KPI labels");
 }
 
+// ====== MODAL FUNCTIONS ======
+function showKPIModal(title, unit, description) {
+  const modal = document.getElementById('kpiModal');
+  const modalTitle = document.getElementById('kpiModalTitle');
+  const modalUnit = document.getElementById('kpiModalUnit');
+  const modalDescription = document.getElementById('kpiModalDescription');
+
+  modalTitle.textContent = title;
+  modalUnit.textContent = unit ? `Unit: ${unit}` : '';
+  modalDescription.textContent = description || 'No description available';
+
+  modal.style.display = 'block';
+}
+
+function closeKPIModal() {
+  const modal = document.getElementById('kpiModal');
+  modal.style.display = 'none';
+}
+
 // ====== INITIALIZE TOOLTIPS ======
 function initializeTooltips(metadata) {
   const tooltipIcons = document.querySelectorAll(".tooltip-icon");
@@ -224,15 +243,35 @@ function initializeTooltips(metadata) {
 
     if (!meta) return;
 
+    // Add click event to show modal
+    icon.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showKPIModal(meta.title, meta.unit, meta.tooltip);
+    });
+
+    // Remove old hover tooltip functionality
     const tooltipTextSpan = icon
       .closest(".tooltip-container")
       .querySelector(".tooltip-text");
-
-    const content = `Unit: ${meta.unit}<br><br>${meta.tooltip}`;
-    tooltipTextSpan.innerHTML = content;
+    if (tooltipTextSpan) {
+      tooltipTextSpan.style.display = 'none';
+    }
   });
 
-  console.log("✅ Initialized tooltips");
+  // Add modal close handlers
+  const modal = document.getElementById('kpiModal');
+  const closeBtn = document.querySelector('.kpi-modal-close');
+
+  closeBtn.addEventListener('click', closeKPIModal);
+
+  // Close modal when clicking outside
+  window.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeKPIModal();
+    }
+  });
+
+  console.log("✅ Initialized clickable info icons");
 }
 
 // ====== RENDER CHARTS ======
@@ -302,36 +341,6 @@ function renderCharts(data, metadata) {
           },
           tooltip: {
             callbacks: {
-              beforeTitle: function() {
-                // Show KPI description from Info sheet
-                const text = meta.tooltip || '';
-
-                // Debug logging
-                console.log(`Tooltip for ${meta.title}: "${text}"`);
-
-                if (!text || text === 'null' || text.trim() === '') {
-                  return []; // Return empty array if no tooltip
-                }
-
-                // Split long tooltip text into multiple lines (max 60 chars per line)
-                const words = text.split(' ');
-                const lines = [];
-                let currentLine = '';
-
-                words.forEach(word => {
-                  const testLine = currentLine ? currentLine + ' ' + word : word;
-                  if (testLine.length <= 60) {
-                    currentLine = testLine;
-                  } else {
-                    if (currentLine) lines.push(currentLine);
-                    currentLine = word;
-                  }
-                });
-                if (currentLine) lines.push(currentLine);
-
-                console.log(`Tooltip lines:`, lines);
-                return lines;
-              },
               title: function(context) {
                 return context[0].label; // Organization name
               },

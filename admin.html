@@ -473,19 +473,45 @@
           return;
         }
 
-        console.log("Loading data for:", orgName, org);
+        console.log("Loading data for:", orgName);
+        console.log("Available columns:", Object.keys(org));
+        console.log("Full org data:", org);
 
         // Populate form fields with existing data
         document.getElementById("orgName").value = orgName;
-        document.getElementById("totalPopulation").value = org["Total Population to Targeted Region"] || "";
-        document.getElementById("activeMembers").value = org["Number of Active Individual Members"] || "";
-        document.getElementById("orgMembers").value = org["Number of Active Organizational Members"] || "";
-        document.getElementById("totalMembers").value = org["Total Members"] || "";
-        document.getElementById("revenue").value = org["Annual (Anualized) Revenue ($USD)"] || "";
-        document.getElementById("events").value = org["Number of Events/Conferences Scheduled in the Next 18 Months"] || "";
-        document.getElementById("calendarEvents").value = org["Number of GFMAM Calendar Events"] || "";
-        document.getElementById("projects").value = org["Number of GFMAM Member Presentations Planned in the Next 18 Months"] || "";
-        document.getElementById("meetingHosting").value = org["Number of Times hosted GFMAM Members Meeting (since est. of GFMAM)"] || "";
+
+        // Try different possible column name variations
+        const totalPop = org["Total Population to Targeted Region"] || org["Total Population"] || "";
+        const activeMem = org["Number of Active Individual Members"] || org["Active Individual Members"] || "";
+        const orgMem = org["Number of Active Organizational Members"] || org["Active Organizational Members"] || "";
+        const totalMem = org["Total Members"] || "";
+        const rev = org["Annual (Anualized) Revenue ($USD)"] || org["Annual Revenue ($USD)"] || org["Revenue"] || "";
+        const evts = org["Number of Events/Conferences Scheduled in the Next 18 Months"] || org["Events/Conferences"] || "";
+        const calEvts = org["Number of GFMAM Calendar Events"] || org["GFMAM Calendar Events"] || "";
+        const proj = org["Number of GFMAM Member Presentations Planned in the Next 18 Months"] || org["GFMAM Member Presentations"] || "";
+        const hosting = org["Number of Times hosted GFMAM Members Meeting (since est. of GFMAM)"] || org["Hosted GFMAM Members Meeting"] || "";
+
+        console.log("Field values:", {
+          totalPopulation: totalPop,
+          activeMembers: activeMem,
+          orgMembers: orgMem,
+          totalMembers: totalMem,
+          revenue: rev,
+          events: evts,
+          calendarEvents: calEvts,
+          projects: proj,
+          meetingHosting: hosting
+        });
+
+        document.getElementById("totalPopulation").value = totalPop;
+        document.getElementById("activeMembers").value = activeMem;
+        document.getElementById("orgMembers").value = orgMem;
+        document.getElementById("totalMembers").value = totalMem;
+        document.getElementById("revenue").value = rev;
+        document.getElementById("events").value = evts;
+        document.getElementById("calendarEvents").value = calEvts;
+        document.getElementById("projects").value = proj;
+        document.getElementById("meetingHosting").value = hosting;
       }
 
       // ====== ORGANIZATION SELECTION ======
