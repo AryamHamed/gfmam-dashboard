@@ -395,6 +395,9 @@
       <p>© 2025 Global Forum on Maintenance and Asset Management (GFMAM)</p>
     </footer>
 
+    <!-- PapaParse for CSV parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
     <script>
       // ====== CONFIGURATION ======
       const ADMIN_PASSWORD = "gfmam2025"; // Change this password!
@@ -424,6 +427,9 @@
         resetForm();
       }
 
+      // ====== GLOBAL DATA STORAGE ======
+      let societyData = []; // Store all society data
+
       // ====== LOAD EXISTING ORGANIZATIONS ======
       async function loadOrganizations() {
         try {
@@ -431,28 +437,65 @@
             "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQzLow7RmZkpO7zMGrvH9q4Uclu8DJ6EHAN8aYZ62bx4KsWa3Ut8c5GsOXJIkGvfwp8T-eBj7yev0Y/pub?gid=909719683&single=true&output=csv"
           );
           const csvText = await response.text();
-          const rows = csvText.split("\n");
-          const select = document.getElementById("orgSelect");
 
-          // Parse organization names (first column)
-          for (let i = 1; i < rows.length; i++) {
-            const cols = rows[i].split(",");
-            if (cols[0] && cols[0].trim()) {
+          // Parse CSV using PapaParse (already loaded)
+          const parsed = Papa.parse(csvText, {
+            header: true,
+            dynamicTyping: true,
+            skipEmptyLines: true,
+            transformHeader: (header) => header.trim()
+          });
+
+          societyData = parsed.data;
+          console.log("✅ Loaded society data:", societyData);
+
+          // Populate dropdown
+          const select = document.getElementById("orgSelect");
+          societyData.forEach(org => {
+            if (org["Organization Name"]) {
               const option = document.createElement("option");
-              option.value = cols[0].trim();
-              option.textContent = cols[0].trim();
+              option.value = org["Organization Name"];
+              option.textContent = org["Organization Name"];
               select.appendChild(option);
             }
-          }
+          });
         } catch (error) {
           console.error("Error loading organizations:", error);
         }
       }
 
+      // ====== LOAD ORGANIZATION DATA INTO FORM ======
+      function loadOrganizationData(orgName) {
+        const org = societyData.find(o => o["Organization Name"] === orgName);
+
+        if (!org) {
+          console.log("New organization - clearing form");
+          return;
+        }
+
+        console.log("Loading data for:", orgName, org);
+
+        // Populate form fields with existing data
+        document.getElementById("orgName").value = orgName;
+        document.getElementById("totalPopulation").value = org["Total Population to Targeted Region"] || "";
+        document.getElementById("activeMembers").value = org["Number of Active Individual Members"] || "";
+        document.getElementById("orgMembers").value = org["Number of Active Organizational Members"] || "";
+        document.getElementById("totalMembers").value = org["Total Members"] || "";
+        document.getElementById("revenue").value = org["Annual (Anualized) Revenue ($USD)"] || "";
+        document.getElementById("events").value = org["Number of Events/Conferences Scheduled in the Next 18 Months"] || "";
+        document.getElementById("calendarEvents").value = org["Number of GFMAM Calendar Events"] || "";
+        document.getElementById("projects").value = org["Number of GFMAM Member Presentations Planned in the Next 18 Months"] || "";
+        document.getElementById("meetingHosting").value = org["Number of Times hosted GFMAM Members Meeting (since est. of GFMAM)"] || "";
+      }
+
       // ====== ORGANIZATION SELECTION ======
       document.getElementById("orgSelect").addEventListener("change", (e) => {
-        document.getElementById("orgName").value = e.target.value;
-        // TODO: Load existing data for selected organization
+        const orgName = e.target.value;
+        if (orgName) {
+          loadOrganizationData(orgName);
+        } else {
+          resetForm();
+        }
       });
 
       // ====== FORM SUBMISSION ======
