@@ -575,9 +575,10 @@ async function initializeDashboard() {
     // Update UI
     updateKPILabels(kpiMetadata);
     updateKPICards(aggregates, kpiMetadata);
-    initializeTooltips(kpiMetadata);
     renderCharts(kviData, kpiMetadata);
     renderSpiderChart(kviData, kpiMetadata);
+    // Initialize tooltips AFTER charts are rendered and data-kpi attributes are set
+    initializeTooltips(kpiMetadata);
 
     console.log("✅ Dashboard Initialized Successfully");
   } catch (error) {
