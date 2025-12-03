@@ -298,10 +298,54 @@ function renderCharts(data, metadata) {
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            display: true,
-            labels: {
-              color: "#002b5c",
+            display: false, // Hide legend
+          },
+          tooltip: {
+            callbacks: {
+              beforeTitle: function() {
+                // Split long tooltip text into multiple lines (max 50 chars per line)
+                const text = meta.tooltip || '';
+                if (!text) return '';
+
+                const words = text.split(' ');
+                const lines = [];
+                let currentLine = '';
+
+                words.forEach(word => {
+                  if ((currentLine + ' ' + word).length <= 50) {
+                    currentLine += (currentLine ? ' ' : '') + word;
+                  } else {
+                    if (currentLine) lines.push(currentLine);
+                    currentLine = word;
+                  }
+                });
+                if (currentLine) lines.push(currentLine);
+
+                return lines;
+              },
+              title: function(context) {
+                return context[0].label; // Organization name
+              },
+              label: function(context) {
+                const value = context.parsed.y;
+                const unit = meta.unit || '';
+
+                // Format based on unit type
+                if (unit.toLowerCase().includes('%')) {
+                  return unit + ': ' + value.toFixed(2) + '%';
+                } else if (unit.toLowerCase().includes('time')) {
+                  return unit + ': ' + value.toFixed(1) + 'x';
+                } else {
+                  return unit + ': ' + value.toLocaleString();
+                }
+              }
             },
+            titleFont: { size: 14, weight: 'bold' },
+            bodyFont: { size: 12 },
+            padding: 15,
+            displayColors: false,
+            boxWidth: 400,
+            boxPadding: 6
           },
           title: {
             display: true,
