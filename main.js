@@ -413,6 +413,16 @@ function renderCharts(data, metadata) {
     });
 
     charts.push({ chart, column });
+
+    // Update chart header icon data-kpi attribute
+    const chartBox = canvas.closest('.chart-box');
+    if (chartBox) {
+      const chartHeaderIcon = chartBox.querySelector('.chart-header .tooltip-icon');
+      if (chartHeaderIcon) {
+        chartHeaderIcon.setAttribute('data-kpi', kpiKey);
+        console.log(`Updated chart header icon for ${canvasId}: ${kpiKey}`);
+      }
+    }
   });
 
   // ====== UPDATE CHARTS WITH FILTER ======
