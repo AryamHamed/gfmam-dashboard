@@ -97,6 +97,21 @@ function buildMetadataFromInfo(infoData) {
     }
   });
 
+  // ====== APPLY CUSTOM OVERRIDES FOR SPECIFIC KPIs ======
+
+  // Override for "Membership Share" -> "Membership Reach"
+  if (metadata["Membership Share"]) {
+    metadata["Membership Share"].title = "Membership Reach";
+    metadata["Membership Share"].tooltip = "The total number of individual members of all GFMAM Member Organization";
+    console.log("✅ Applied override for 'Membership Share' -> 'Membership Reach'");
+  }
+
+  // Override for "Financial Health"
+  if (metadata["Financial Health"]) {
+    metadata["Financial Health"].tooltip = "The average of the amount of annualized Revenue of all GFMAM member Organizations";
+    console.log("✅ Applied override for 'Financial Health' description");
+  }
+
   // Add special metadata for Spider Chart
   metadata["Spider Chart"] = {
     title: "Organization Radar",
@@ -190,12 +205,13 @@ function updateKPILabels(metadata) {
     }
 
     const card = allCards[index];
+    const customTitle = metadata[kpiName].title; // Use custom title from metadata
 
     // Update KPI card title
     const cardTitle = card.querySelector('h3');
     if (cardTitle) {
-      cardTitle.textContent = kpiName;
-      console.log(`Updated card ${index + 1}: ${kpiName}`);
+      cardTitle.textContent = customTitle;
+      console.log(`Updated card ${index + 1}: ${kpiName} -> ${customTitle}`);
     }
 
     // Update tooltip data-kpi attribute
