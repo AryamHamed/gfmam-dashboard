@@ -107,12 +107,11 @@ function buildMetadataFromInfo(infoData) {
     console.log("✅ Applied override for 'Membership Share' -> 'Membership Reach'");
   }
 
-  // Override for "Financial Health" to use Annualized Revenue column
+  // Override for "Financial Health" - only unit and tooltip for KPI card
   if (metadata["Financial Health"]) {
-    metadata["Financial Health"].column = "Annualized Revenue";
     metadata["Financial Health"].unit = "USD";
     metadata["Financial Health"].tooltip = "The Average of the amount of annualized revenue of all GFMAM Member organizations";
-    console.log("✅ Applied override for 'Financial Health' to use 'Annualized Revenue' column");
+    console.log("✅ Applied override for 'Financial Health' unit and tooltip");
   }
 
   // Add special metadata for Spider Chart
@@ -134,7 +133,8 @@ function calculateAggregateKPIs(data, metadata) {
   const keys = Object.keys(metadata).filter(k => k !== "Spider Chart");
 
   keys.forEach((kpiName) => {
-    const column = metadata[kpiName].column;
+    // Special handling for Financial Health: use Annualized Revenue column for card
+    const column = kpiName === "Financial Health" ? "Annualized Revenue" : metadata[kpiName].column;
     let sum = 0;
     let count = 0;
 
