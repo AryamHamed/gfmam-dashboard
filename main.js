@@ -99,12 +99,6 @@ function buildMetadataFromInfo(infoData) {
 
   // ====== APPLY CUSTOM OVERRIDES FOR SPECIFIC KPIs ======
 
-  // Override for "Membership Share" - set unit for chart display
-  if (metadata["Membership Share"]) {
-    metadata["Membership Share"].unit = "Members";
-    console.log("✅ Applied override for 'Membership Share' unit");
-  }
-
   // Override for "Financial Health" - only unit and tooltip for KPI card
   if (metadata["Financial Health"]) {
     metadata["Financial Health"].unit = "USD";
