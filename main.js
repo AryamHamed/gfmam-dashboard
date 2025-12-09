@@ -107,6 +107,12 @@ function buildMetadataFromInfo(infoData) {
     console.log("✅ Applied override for 'Membership Share' -> 'Membership Reach'");
   }
 
+  // Override for "Financial Health" to use Annualized Revenue column
+  if (metadata["Financial Health"]) {
+    metadata["Financial Health"].column = "Annualized Revenue";
+    console.log("✅ Applied override for 'Financial Health' to use 'Annualized Revenue' column");
+  }
+
   // Add special metadata for Spider Chart
   metadata["Spider Chart"] = {
     title: "Organization Radar",
