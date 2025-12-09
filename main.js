@@ -99,13 +99,6 @@ function buildMetadataFromInfo(infoData) {
 
   // ====== APPLY CUSTOM OVERRIDES FOR SPECIFIC KPIs ======
 
-  // Override for "Financial Health" - only unit and tooltip for KPI card
-  if (metadata["Financial Health"]) {
-    metadata["Financial Health"].unit = "USD";
-    metadata["Financial Health"].tooltip = "The Average of the amount of annualized revenue of all GFMAM Member organizations";
-    console.log("✅ Applied override for 'Financial Health' unit and tooltip");
-  }
-
   // Add special metadata for Spider Chart
   metadata["Spider Chart"] = {
     title: "Organization Radar",
@@ -280,16 +273,22 @@ function initializeTooltips(metadata) {
       e.stopPropagation();
 
       let displayTitle = meta.title;
+      let displayUnit = meta.unit;
       let displayTooltip = meta.tooltip;
 
       // Special override for KPI cards only (not charts)
       const isKPICard = icon.closest('.kpi-card');
-      if (kpiKey === "Membership Share" && isKPICard) {
-        displayTitle = "Membership Reach";
-        displayTooltip = "The total number of individual members of all GFMAM Member Organization";
+      if (isKPICard) {
+        if (kpiKey === "Membership Share") {
+          displayTitle = "Membership Reach";
+          displayTooltip = "The total number of individual members of all GFMAM Member Organization";
+        } else if (kpiKey === "Financial Health") {
+          displayUnit = "USD";
+          displayTooltip = "The Average of the amount of annualized revenue of all GFMAM Member organizations";
+        }
       }
 
-      showKPIModal(displayTitle, meta.unit, displayTooltip);
+      showKPIModal(displayTitle, displayUnit, displayTooltip);
     });
 
     // Remove old hover tooltip functionality
