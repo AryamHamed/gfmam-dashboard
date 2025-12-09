@@ -164,9 +164,20 @@
 
       .form-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: 20px;
         margin-bottom: 20px;
+      }
+
+      @media (max-width: 768px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .form-grid.single-column {
+        grid-template-columns: 1fr;
+        max-width: 600px;
       }
 
       .instructions {
@@ -260,7 +271,7 @@
         </div>
 
         <form id="dataForm">
-          <div class="form-grid">
+          <div class="form-grid single-column">
             <div class="form-group">
               <label for="orgSelect">
                 <i class="fa-solid fa-building"></i> Select Society *
@@ -269,7 +280,6 @@
                 <option value="">-- Select or type new --</option>
               </select>
             </div>
-
           </div>
 
           <h3 style="color: #002b5c; margin: 30px 0 20px 0;">
@@ -386,8 +396,9 @@
       // ====== LOAD EXISTING ORGANIZATIONS ======
       async function loadOrganizations() {
         try {
+          // Use the same KVI sheet as the dashboard
           const response = await fetch(
-            "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQzLow7RmZkpO7zMGrvH9q4Uclu8DJ6EHAN8aYZ62bx4KsWa3Ut8c5GsOXJIkGvfwp8T-eBj7yev0Y/pub?gid=909719683&single=true&output=csv"
+            "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQzLow7RmZkpO7zMGrvH9q4Uclu8DJ6EHAN8aYZ62bx4KsWa3Ut8c5GsOXJIkGvfwp8T-eBj7yev0Y/pub?gid=450258484&single=true&output=csv"
           );
           const csvText = await response.text();
 
@@ -396,11 +407,12 @@
             header: true,
             dynamicTyping: true,
             skipEmptyLines: true,
-            transformHeader: (header) => header.trim()
+            transformHeader: (header) => header.replace(/[\u200B-\u200D\uFEFF]/g, "").trim()
           });
 
           societyData = parsed.data;
           console.log("✅ Loaded society data:", societyData);
+          console.log("✅ Column names:", Object.keys(societyData[0] || {}));
 
           // Populate dropdown
           const select = document.getElementById("orgSelect");
