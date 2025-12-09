@@ -110,6 +110,8 @@ function buildMetadataFromInfo(infoData) {
   // Override for "Financial Health" to use Annualized Revenue column
   if (metadata["Financial Health"]) {
     metadata["Financial Health"].column = "Annualized Revenue";
+    metadata["Financial Health"].unit = "USD";
+    metadata["Financial Health"].tooltip = "The Average of the amount of annualized revenue of all GFMAM Member organizations";
     console.log("✅ Applied override for 'Financial Health' to use 'Annualized Revenue' column");
   }
 
@@ -174,8 +176,15 @@ function updateKPICards(aggregates, metadata) {
 
       let displayValue = "--";
       if (value !== undefined && value !== null) {
+        // Special formatting for Financial Health - just show the number
+        if (kpiName === "Financial Health") {
+          displayValue = value.toLocaleString('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+          });
+        }
         // Format based on unit type
-        if (unit.toLowerCase().includes("%")) {
+        else if (unit.toLowerCase().includes("%")) {
           displayValue = value.toFixed(2) + "%";
         } else if (unit.toLowerCase().includes("time")) {
           displayValue = value.toFixed(1) + "x";
