@@ -99,13 +99,6 @@ function buildMetadataFromInfo(infoData) {
 
   // ====== APPLY CUSTOM OVERRIDES FOR SPECIFIC KPIs ======
 
-  // Override for "Membership Share" - only title and tooltip for KPI card
-  if (metadata["Membership Share"]) {
-    metadata["Membership Share"].title = "Membership Reach";
-    metadata["Membership Share"].tooltip = "The total number of individual members of all GFMAM Member Organization";
-    console.log("✅ Applied override for 'Membership Share' title and tooltip");
-  }
-
   // Override for "Financial Health" - only unit and tooltip for KPI card
   if (metadata["Financial Health"]) {
     metadata["Financial Health"].unit = "USD";
@@ -223,7 +216,12 @@ function updateKPILabels(metadata) {
     }
 
     const card = allCards[index];
-    const customTitle = metadata[kpiName].title; // Use custom title from metadata
+    let customTitle = metadata[kpiName].title; // Use custom title from metadata
+
+    // Special override for KPI card only: Membership Share -> Membership Reach
+    if (kpiName === "Membership Share") {
+      customTitle = "Membership Reach";
+    }
 
     // Update KPI card title
     const cardTitle = card.querySelector('h3');
@@ -280,7 +278,18 @@ function initializeTooltips(metadata) {
     // Add click event to show modal
     icon.addEventListener('click', (e) => {
       e.stopPropagation();
-      showKPIModal(meta.title, meta.unit, meta.tooltip);
+
+      let displayTitle = meta.title;
+      let displayTooltip = meta.tooltip;
+
+      // Special override for KPI cards only (not charts)
+      const isKPICard = icon.closest('.kpi-card');
+      if (kpiKey === "Membership Share" && isKPICard) {
+        displayTitle = "Membership Reach";
+        displayTooltip = "The total number of individual members of all GFMAM Member Organization";
+      }
+
+      showKPIModal(displayTitle, meta.unit, displayTooltip);
     });
 
     // Remove old hover tooltip functionality
