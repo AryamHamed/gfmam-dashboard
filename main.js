@@ -375,15 +375,8 @@ function renderCharts(data, metadata) {
                 const value = context.parsed.y;
                 const unit = meta.unit || '';
 
-                // Special formatting for Financial Health
-                if (kpiKey === 'Financial Health') {
-                  return '$' + value.toLocaleString('en-US', {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0
-                  });
-                }
                 // Format based on unit type
-                else if (unit.toLowerCase().includes('%')) {
+                if (unit.toLowerCase().includes('%')) {
                   return value.toFixed(2) + '%';
                 } else if (unit.toLowerCase().includes('time')) {
                   return value.toFixed(1) + 'x';
@@ -427,14 +420,6 @@ function renderCharts(data, metadata) {
             ticks: {
               color: "#000000",
               callback: function (value) {
-                // Special formatting for Financial Health
-                if (kpiKey === 'Financial Health') {
-                  return '$' + value.toLocaleString('en-US', {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0
-                  });
-                }
-
                 const unit = meta.unit.toLowerCase();
                 if (unit.includes("time")) {
                   return value.toFixed(1) + "x";
