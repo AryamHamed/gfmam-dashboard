@@ -107,13 +107,6 @@ function buildMetadataFromInfo(infoData) {
     console.log("✅ Applied override for 'Membership Share' -> 'Membership Reach'");
   }
 
-  // Override for "Financial Health"
-  if (metadata["Financial Health"]) {
-    metadata["Financial Health"].tooltip = "The average of the amount of annualized Revenue of all GFMAM member Organizations in USD";
-    metadata["Financial Health"].unit = "USD";
-    console.log("✅ Applied override for 'Financial Health' description");
-  }
-
   // Add special metadata for Spider Chart
   metadata["Spider Chart"] = {
     title: "Organization Radar",
@@ -145,12 +138,9 @@ function calculateAggregateKPIs(data, metadata) {
       }
     });
 
-    // Special handling for Financial Health: always calculate average
-    if (kpiName === "Financial Health") {
-      aggregates[kpiName] = count > 0 ? sum / count : 0;
-    }
     // For percentage KPIs, calculate average; for others, sum
-    else if (metadata[kpiName].unit.toLowerCase().includes("%")) {
+    const unit = metadata[kpiName].unit.toLowerCase();
+    if (unit.includes("%")) {
       aggregates[kpiName] = count > 0 ? sum / count : 0;
     } else {
       aggregates[kpiName] = sum;
@@ -175,15 +165,8 @@ function updateKPICards(aggregates, metadata) {
 
       let displayValue = "--";
       if (value !== undefined && value !== null) {
-        // Special formatting for Financial Health in USD
-        if (kpiName === "Financial Health") {
-          displayValue = "$" + value.toLocaleString('en-US', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-          });
-        }
         // Format based on unit type
-        else if (unit.toLowerCase().includes("%")) {
+        if (unit.toLowerCase().includes("%")) {
           displayValue = value.toFixed(2) + "%";
         } else if (unit.toLowerCase().includes("time")) {
           displayValue = value.toFixed(1) + "x";
