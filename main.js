@@ -104,6 +104,11 @@ function buildMetadataFromInfo(infoData) {
     metadata["Financial Health"].unit = "x times";
   }
 
+  // Override Membership Share unit
+  if (metadata["Membership Share"]) {
+    metadata["Membership Share"].unit = "Total Number of Members";
+  }
+
   // Add special metadata for Spider Chart
   metadata["Spider Chart"] = {
     title: "Organization Radar",
@@ -169,6 +174,13 @@ function updateKPICards(aggregates, metadata) {
         // Special formatting for Financial Health - show with 'x' suffix
         if (kpiName === "Financial Health") {
           displayValue = value.toFixed(1) + "x";
+        }
+        // Special formatting for Membership Share - show as whole number
+        else if (kpiName === "Membership Share") {
+          displayValue = value.toLocaleString('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+          });
         }
         // Format based on unit type
         else if (unit.toLowerCase().includes("%")) {
@@ -277,6 +289,7 @@ function initializeTooltips(metadata) {
       if (isKPICard) {
         if (kpiKey === "Membership Share") {
           displayTitle = "Membership Reach";
+          displayUnit = "Total Number of Members";
           displayTooltip = "The total number of individual members of all GFMAM Member Organization";
         } else if (kpiKey === "Financial Health") {
           displayUnit = "x times";
