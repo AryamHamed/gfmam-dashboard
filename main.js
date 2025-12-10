@@ -104,11 +104,6 @@ function buildMetadataFromInfo(infoData) {
     metadata["Financial Health"].unit = "x times";
   }
 
-  // Override Membership Share unit
-  if (metadata["Membership Share"]) {
-    metadata["Membership Share"].unit = "Total Number of Members";
-  }
-
   // Add special metadata for Spider Chart
   metadata["Spider Chart"] = {
     title: "Organization Radar",
