@@ -328,6 +328,42 @@ function initializeTooltips(metadata) {
   console.log("✅ Initialized clickable info icons");
 }
 
+// ====== AVERAGE LINE PLUGIN ======
+const averageLinePlugin = {
+  id: 'averageLine',
+  afterDatasetsDraw(chart) {
+    const { ctx, chartArea: { left, right }, scales: { y } } = chart;
+
+    // Calculate average from the dataset
+    const data = chart.data.datasets[0].data;
+    if (!data || data.length === 0) return;
+
+    const sum = data.reduce((acc, val) => acc + (val || 0), 0);
+    const average = sum / data.length;
+
+    // Draw red dotted horizontal line
+    const yPos = y.getPixelForValue(average);
+
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)'; // Red color
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]); // Dotted line pattern
+
+    ctx.beginPath();
+    ctx.moveTo(left, yPos);
+    ctx.lineTo(right, yPos);
+    ctx.stroke();
+
+    // Draw average label
+    ctx.fillStyle = 'rgba(255, 0, 0, 0.9)';
+    ctx.font = 'bold 11px Arial';
+    ctx.textAlign = 'right';
+    ctx.fillText(`Avg: ${average.toFixed(1)}`, right - 5, yPos - 5);
+
+    ctx.restore();
+  }
+};
+
 // ====== RENDER CHARTS ======
 function renderCharts(data, metadata) {
   const val = (x) => parseFloat(String(x).replace(/[^\d.-]/g, "")) || 0;
@@ -386,6 +422,7 @@ function renderCharts(data, metadata) {
           }
         ],
       },
+      plugins: [averageLinePlugin],
       options: {
         responsive: true,
         maintainAspectRatio: false,
