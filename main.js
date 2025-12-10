@@ -99,6 +99,11 @@ function buildMetadataFromInfo(infoData) {
 
   // ====== APPLY CUSTOM OVERRIDES FOR SPECIFIC KPIs ======
 
+  // Override Financial Health unit
+  if (metadata["Financial Health"]) {
+    metadata["Financial Health"].unit = "x times";
+  }
+
   // Add special metadata for Spider Chart
   metadata["Spider Chart"] = {
     title: "Organization Radar",
@@ -167,12 +172,9 @@ function updateKPICards(aggregates, metadata) {
 
       let displayValue = "--";
       if (value !== undefined && value !== null) {
-        // Special formatting for Financial Health - just show the number
+        // Special formatting for Financial Health - show with 'x' suffix
         if (kpiName === "Financial Health") {
-          displayValue = value.toLocaleString('en-US', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-          });
+          displayValue = value.toFixed(1) + "x";
         }
         // Format based on unit type
         else if (unit.toLowerCase().includes("%")) {
@@ -283,8 +285,8 @@ function initializeTooltips(metadata) {
           displayTitle = "Membership Reach";
           displayTooltip = "The total number of individual members of all GFMAM Member Organization";
         } else if (kpiKey === "Financial Health") {
-          displayUnit = "USD";
-          displayTooltip = "The Average of the amount of annualized revenue of all GFMAM Member organizations";
+          displayUnit = "x times";
+          displayTooltip = "The average Financial Health metric across all GFMAM Member organizations";
         }
       }
 
