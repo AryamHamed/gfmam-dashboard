@@ -177,6 +177,10 @@ function updateKPICards(aggregates, metadata) {
             maximumFractionDigits: 0
           });
         }
+        // Special formatting for GFMAM F2F Meeting Hosting Opportunities - show as decimal number
+        else if (kpiName === "GFMAM F2F Meeting Hosting Opportunities") {
+          displayValue = value.toFixed(1);
+        }
         // Format based on unit type
         else if (unit.toLowerCase().includes("%")) {
           displayValue = value.toFixed(2) + "%";
@@ -289,6 +293,8 @@ function initializeTooltips(metadata) {
         } else if (kpiKey === "Financial Health") {
           displayUnit = "x times";
           displayTooltip = "The average Financial Health metric across all GFMAM Member organizations";
+        } else if (kpiKey === "GFMAM F2F Meeting Hosting Opportunities") {
+          displayTooltip = "The Average times the GFMAM Member organization had the opportunity to host the GFMAM Members Meeting since the establishment of GFMAM.";
         }
       }
 
