@@ -125,9 +125,7 @@ function calculateAggregateKPIs(data, metadata) {
   keys.forEach((kpiName) => {
     // Special handling for specific KPIs: use different columns for cards
     let column = metadata[kpiName].column;
-    if (kpiName === "Financial Health") {
-      column = "Annualized Revenue";
-    } else if (kpiName === "Membership Share") {
+    if (kpiName === "Membership Share") {
       column = "Number of Active Individual Members";
     }
 
@@ -142,12 +140,8 @@ function calculateAggregateKPIs(data, metadata) {
       }
     });
 
-    // Special handling for Financial Health: calculate average
-    if (kpiName === "Financial Health") {
-      aggregates[kpiName] = count > 0 ? sum / count : 0;
-    }
-    // For percentage KPIs, calculate average; for others, sum
-    else if (metadata[kpiName].unit.toLowerCase().includes("%")) {
+    // Special handling for Financial Health and percentage KPIs: calculate average
+    if (kpiName === "Financial Health" || metadata[kpiName].unit.toLowerCase().includes("%")) {
       aggregates[kpiName] = count > 0 ? sum / count : 0;
     } else {
       aggregates[kpiName] = sum;
